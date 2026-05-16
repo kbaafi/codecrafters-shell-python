@@ -40,6 +40,7 @@ def echo_handler(ctx: ShellContext, *args):
 
 
 def cd_handler(ctx: ShellContext, *args):
+    print(ctx, args)
     path = args[1]
 
     is_abs = os.path.isabs(path)
