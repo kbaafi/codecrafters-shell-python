@@ -3,5 +3,5 @@ def exit_handler(*args):
     return -1
 
 def echo_handler(*args):
-    print(" ".join(str(args)))
+    print(" ".join(args))
     print("\n")
