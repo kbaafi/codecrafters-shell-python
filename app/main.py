@@ -1,14 +1,11 @@
 from enum import Enum
 import sys
 from .common import PROMPT, is_executable_command
-from .handlers import built_ins, run_executable
+from .handlers import built_ins, run_executable, CommandType
 import os
 
 
-class CommandType(Enum):
-    BUILTIN = "BUILTIN"
-    EXECUTABLE = "EXECUTABLE"
-    INVALID = "INVALID"
+
 
 
 def resolve_command(command: str) -> tuple[CommandType, str | None]:

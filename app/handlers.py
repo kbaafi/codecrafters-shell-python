@@ -1,9 +1,16 @@
 from typing import Generic, TypeVar
 import subprocess
-from .common import is_executable_command
 import os
+from enum import Enum
+
+from app.common import is_executable_command
 
 T = TypeVar("T")
+
+class CommandType(Enum):
+    BUILTIN = "BUILTIN"
+    EXECUTABLE = "EXECUTABLE"
+    INVALID = "INVALID"
 
 
 class Result(Generic[T]):
@@ -31,14 +38,27 @@ def echo_handler(*args):
     return Result[str](value=result_msg)
 
 
-def type_handler(*args):
-    command = args[0]
+def resolve_command(command: str) -> tuple[CommandType, str | None]:
     if command in built_ins:
-        return Result[str](value=f"{command} is a shell builtin")
+        return CommandType.BUILTIN, None
     found, full_path = is_executable_command(command)
     if found:
-        return Result[str](value=f"{command} is {full_path}")
-    return Result[str](value=f"{command}: not found")
+        return CommandType.EXECUTABLE, full_path
+    return CommandType.INVALID, None
+
+
+def type_handler(*args):
+    command = args[0]
+    command_type, path = resolve_command(command)
+
+    match command_type:
+        case CommandType.BUILTIN:
+            return Result[str](value=f"{command} is a shell builtin")
+        case CommandType.EXECUTABLE:
+            return Result[str](value=f"{command} is {path}")
+        case CommandType.INVALID:
+            return Result[str](value=f"{command}: not found")
+    
 
 def pwd_handler(*args):
     return Result[str](value=os.getcwd())
@@ -54,5 +74,6 @@ built_ins = {
     "exit": exit_handler,
     "echo": echo_handler,
     "type": type_handler,
-    "pwd": pwd_handler
+    "pwd": pwd_handler,
+    # "cd": 
 }
