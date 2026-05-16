@@ -28,9 +28,11 @@ class EchoResult(BaseResult):
     def __init__(self, result: str):
         super().__init__(result)
 
+
 def exit_handler(*args):
     _ = args
     return ExitResult(None)
+
 
 def echo_handler(*args):
     result_msg = f'{" ".join(args)} \n'
