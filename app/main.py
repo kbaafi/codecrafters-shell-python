@@ -1,8 +1,14 @@
 import sys
+from handlers import exit_handler
 
 
 PROMPT = "$ "
-ALLOWED_COMMANDS = []
+ALLOWED_COMMANDS = ["exit"]
+
+
+
+
+dispatch = {"exit": exit_handler}
 
 
 def main():
@@ -12,7 +18,9 @@ def main():
         if command not in ALLOWED_COMMANDS:
             print(f"{command}: command not found")
         else:
-            print(f"Executing command: {command}")
+            result = dispatch[command]()
+            if result == -1:
+                break
 
 
 if __name__ == "__main__":
