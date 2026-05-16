@@ -37,7 +37,7 @@ def exit_handler(*args):
 
 
 def echo_handler(*args):
-    result_msg = f'{" ".join(args)} \n'
+    result_msg = f'{" ".join(args)}'
     return StringResult(result_msg)
 
 
