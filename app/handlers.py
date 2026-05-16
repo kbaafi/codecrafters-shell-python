@@ -53,10 +53,10 @@ def type_handler(*args):
 def executable_file_handler(*args):
     command = args[0]
     path = os.environ["PATH"]
-    dirs = path.split(":")
+    dirs = path.split(os.pathsep)
 
     for dir in dirs:
-        full_path = os.path.join(dir)
+        full_path = os.path.join(dir, command)
         if os.path.isfile(full_path) and os.access(full_path, os.X_OK):
             return StringResult(f'{command} is {full_path}')
     return StringResult(f'{command}: not found')
