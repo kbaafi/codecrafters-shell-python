@@ -32,6 +32,7 @@ def echo_handler(*args):
     result_msg = f'{" ".join(args)}'
     return Result[str](value=result_msg)
 
+
 def type_handler(*args):
     command = args[0]
     result, full_path = is_executable_command(command)
