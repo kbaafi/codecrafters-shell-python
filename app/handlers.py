@@ -38,7 +38,7 @@ def type_handler(*args):
     if result:
         return Result[str](value=f"{command} is {full_path}")
     else:
-        return Result[str](value=f"{command}: invalid command")
+        return Result[str](value=f"{command}: not found")
 
 
 
