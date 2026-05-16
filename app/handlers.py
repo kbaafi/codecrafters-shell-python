@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
 
 class AbstractResult(ABC):
+    @property
     @abstractmethod
-    def get_result(self) -> str: ...
+    def result(self) -> str: ...
 
 
 class BaseResult(AbstractResult):
