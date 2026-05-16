@@ -47,7 +47,7 @@ def type_handler(*args):
     if queried_command in built_ins:
         return StringResult(f'{queried_command} is a shell builtin')
     else:
-        return executable_file_handler(args)
+        return executable_file_handler(*args)
     
 
 def executable_file_handler(*args):
