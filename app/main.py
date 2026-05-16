@@ -1,6 +1,7 @@
 import sys
 from .results import BaseResult
-from .common import PROMPT, built_ins
+from .common import PROMPT
+from .handlers import built_ins
 
 def main():
     while True:
