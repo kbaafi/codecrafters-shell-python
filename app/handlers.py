@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from .common import built_ins
 
 class AbstractResult(ABC):
     @property
@@ -24,7 +25,7 @@ class ExitResult(BaseResult):
     _interrupt: bool = True
 
 
-class EchoResult(BaseResult):
+class StringResult(BaseResult):
     def __init__(self, result: str):
         super().__init__(result)
 
@@ -36,4 +37,10 @@ def exit_handler(*args):
 
 def echo_handler(*args):
     result_msg = f'{" ".join(args)} \n'
-    return EchoResult(result_msg)
+    return StringResult(result_msg)
+
+
+def type_handler(*args):
+    queried_command = str(args[0])
+    if queried_command in built_ins:
+        return StringResult(f'{queried_command} is a shell builtin')
