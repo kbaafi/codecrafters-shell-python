@@ -1,5 +1,5 @@
 import sys
-from .handlers import BaseResult
+from .results import BaseResult
 from .common import PROMPT, built_ins
 
 def main():
