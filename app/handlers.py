@@ -1,9 +1,7 @@
-from abc import ABC, abstractmethod
-from enum import Enum
-import os
 from typing import Generic, TypeVar
 import subprocess
 from .common import is_executable_command
+import os
 
 T = TypeVar("T")
 
@@ -42,6 +40,9 @@ def type_handler(*args):
         return Result[str](value=f"{command} is {full_path}")
     return Result[str](value=f"{command}: not found")
 
+def pwd_handler(*args):
+    return Result[str](value=os.getcwd())
+
 
 
 def run_executable(command: str, *args):
@@ -53,4 +54,5 @@ built_ins = {
     "exit": exit_handler,
     "echo": echo_handler,
     "type": type_handler,
+    "pwd": pwd_handler
 }
