@@ -3,7 +3,7 @@ from .handlers import exit_handler
 
 
 PROMPT = "$ "
-ALLOWED_COMMANDS = ["exit"]
+
 
 
 
@@ -15,7 +15,7 @@ def main():
     while True:
         user_input = input(PROMPT)
         command = user_input.strip().split()[0]
-        if command not in ALLOWED_COMMANDS:
+        if command not in dispatch:
             print(f"{command}: command not found")
         else:
             result = dispatch[command]()
