@@ -45,6 +45,8 @@ def type_handler(*args):
     queried_command = str(args[0])
     if queried_command in built_ins:
         return StringResult(f'{queried_command} is a shell builtin')
+    else:
+        return StringResult(f'{queried_command}: not found')
 
 
 built_ins = {
