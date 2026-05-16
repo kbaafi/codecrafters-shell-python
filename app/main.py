@@ -1,5 +1,5 @@
 import sys
-from handlers import exit_handler
+from .handlers import exit_handler
 
 
 PROMPT = "$ "
