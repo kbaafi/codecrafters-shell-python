@@ -1,5 +1,5 @@
 import sys
-from .handlers import exit_handler, echo_handler
+from .handlers import exit_handler, echo_handler, BaseResult
 
 
 PROMPT = "$ "
@@ -18,9 +18,11 @@ def main():
         if command not in dispatch:
             print(f"{command}: command not found")
         else:
-            result = dispatch[command](*args)
-            if result == -1:
+            result: BaseResult = dispatch[command](*args)
+            if result.interrupt:
                 break
+            else:
+                print(result.result, end='')
 
 
 if __name__ == "__main__":
