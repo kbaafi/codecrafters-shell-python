@@ -9,6 +9,6 @@ class ShellContext:
     def cwd(self) -> str:
         return self._cwd
     
-    @property.setter
+    @cwd.setter
     def cwd(self, value) -> None:
         self._cwd = value
