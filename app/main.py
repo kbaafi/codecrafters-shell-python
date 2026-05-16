@@ -11,14 +11,13 @@ class CommandType(Enum):
     INVALID = "INVALID"
 
 
-def ascertain_command_type(command: str) -> CommandType:
+def resolve_command(command: str) -> tuple[CommandType, str | None]:
     if command in built_ins:
-        return CommandType.BUILTIN
-    else:
-        result, _ = is_executable_command(command)
-        if result:
-            return CommandType.EXECUTABLE
-    return CommandType.INVALID
+        return CommandType.BUILTIN, None
+    found, full_path = is_executable_command(command)
+    if found:
+        return CommandType.EXECUTABLE, full_path
+    return CommandType.INVALID, None
 
 
 def main():
@@ -27,20 +26,19 @@ def main():
         if len(user_input) == 0 or not user_input:
             continue
 
-        command = user_input.strip().split()[0]
-        args = user_input.strip().split()[1:]
+        parts = user_input.strip().split()
+        command, *args = parts
 
+        command_type, full_path = resolve_command(command)
 
-        command_type = ascertain_command_type(command)
-
-        if command_type == CommandType.BUILTIN:
-            result = built_ins[command](*args)
-        elif command_type == CommandType.EXECUTABLE:
-            result = run_executable(command, *args)
-        else:
-            print(f"{command}: command not found")
-            continue
-
+        match command_type:
+            case CommandType.BUILTIN:
+                result = built_ins[command](*args)
+            case CommandType.EXECUTABLE:
+                result = run_executable(command, *args)
+            case _:
+                print(f"{command}: command not found")
+                continue
         # Handle results
         if result.interrupt:
             break
