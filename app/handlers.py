@@ -4,6 +4,7 @@ import os
 from enum import Enum
 
 from app.common import is_executable_command
+from app.shell_context import ShellContext
 
 T = TypeVar("T")
 
@@ -28,14 +29,27 @@ class Result(Generic[T]):
     
 
 
-def exit_handler(*args):
+def exit_handler(ctx: ShellContext, *args):
     _ = args
     return Result[None](value=None, interrupt=True)
 
 
-def echo_handler(*args):
+def echo_handler(ctx: ShellContext, *args):
     result_msg = f'{" ".join(args)}'
     return Result[str](value=result_msg)
+
+
+def cd_handler(ctx: ShellContext, *args):
+    path = args[0]
+
+    is_abs = os.path.isabs(path)
+    if is_abs:
+        ctx.cwd = path
+        result = subprocess.run(["cd", path], cwd=ctx.cwd)
+        return Result[None](value=None)
+    else:
+        return Result[str](value=f"cd: {path}: No such file or directory")
+
 
 
 def resolve_command(command: str) -> tuple[CommandType, str | None]:
@@ -47,7 +61,8 @@ def resolve_command(command: str) -> tuple[CommandType, str | None]:
     return CommandType.INVALID, None
 
 
-def type_handler(*args):
+def type_handler(ctx: ShellContext, *args):
+    _ = ctx
     command = args[0]
     command_type, path = resolve_command(command)
 
@@ -60,7 +75,7 @@ def type_handler(*args):
             return Result[str](value=f"{command}: not found")
     
 
-def pwd_handler(*args):
+def pwd_handler(ctx: ShellContext, *args):
     return Result[str](value=os.getcwd())
 
 
@@ -75,5 +90,5 @@ built_ins = {
     "echo": echo_handler,
     "type": type_handler,
     "pwd": pwd_handler,
-    # "cd": 
+    "cd": cd_handler
 }

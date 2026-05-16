@@ -3,6 +3,7 @@ import sys
 from .common import PROMPT, is_executable_command
 from .handlers import built_ins, run_executable, CommandType
 import os
+from .shell_context import ShellContext
 
 
 
@@ -18,6 +19,8 @@ def resolve_command(command: str) -> tuple[CommandType, str | None]:
 
 
 def main():
+    shell_context = ShellContext()
+
     while True:
         user_input = input(PROMPT)
         if len(user_input) == 0 or not user_input:
@@ -30,7 +33,7 @@ def main():
 
         match command_type:
             case CommandType.BUILTIN:
-                result = built_ins[command](*args)
+                result = built_ins[command](shell_context, *args)
             case CommandType.EXECUTABLE:
                 result = run_executable(command, *args)
             case _:
