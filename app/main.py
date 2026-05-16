@@ -11,7 +11,6 @@ def main():
         command = user_input.strip().split()[0]
         if command not in ALLOWED_COMMANDS:
             print(f"{command}: command not found")
-            print(PROMPT, end="")
         else:
             print(f"Executing command: {command}")
 
