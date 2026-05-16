@@ -16,7 +16,8 @@ def ascertain_command_type(command: str) -> CommandType:
         return CommandType.BUILTIN
     else:
         result, _ = is_executable_command(command)
-        return CommandType.EXECUTABLE
+        if result:
+            return CommandType.EXECUTABLE
     return CommandType.INVALID
 
 
