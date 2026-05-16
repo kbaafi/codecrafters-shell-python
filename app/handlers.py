@@ -40,16 +40,17 @@ def echo_handler(ctx: ShellContext, *args):
 
 
 def cd_handler(ctx: ShellContext, *args):
-    print(ctx, args)
-    path = args[0]
+    path = args[0] if args else os.path.expanduser("~")
 
-    is_abs = os.path.isabs(path)
-    if is_abs:
-        ctx.cwd = path
-        result = subprocess.run(["cd", path], cwd=ctx.cwd)
-        return Result[str](value="")
+    if os.path.isabs(path):
+        resolved = path
     else:
-        return Result[str](value=f"cd: {path}: No such file or directory")
+        resolved = os.path.normpath(os.path.join(ctx.cwd, path))
+
+    if os.path.isdir(resolved):
+        ctx.cwd = resolved
+        return Result[None](value=None)
+    return Result[str](value=f"cd: {path}: No such file or directory")
 
 
 
