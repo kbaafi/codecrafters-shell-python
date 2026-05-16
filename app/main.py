@@ -1,13 +1,6 @@
 import sys
-from .handlers import exit_handler, echo_handler, BaseResult
-
-
-PROMPT = "$ "
-dispatch = {
-    "exit": exit_handler,
-    "echo": echo_handler,
-}
-
+from .handlers import BaseResult
+from .common import PROMPT, built_ins
 
 def main():
     while True:
@@ -15,10 +8,10 @@ def main():
         command = user_input.strip().split()[0]
         args = user_input.strip().split()[1:]
 
-        if command not in dispatch:
+        if command not in built_ins:
             print(f"{command}: command not found")
         else:
-            result: BaseResult = dispatch[command](*args)
+            result: BaseResult = built_ins[command](*args)
             if result.interrupt:
                 break
             else:
