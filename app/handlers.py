@@ -3,6 +3,7 @@ from enum import Enum
 import os
 from typing import Generic, TypeVar
 import subprocess
+from .common import is_executable_command
 
 T = TypeVar("T")
 
@@ -31,6 +32,15 @@ def echo_handler(*args):
     result_msg = f'{" ".join(args)}'
     return Result[str](value=result_msg)
 
+def type_handler(*args):
+    command = args[0]
+    result, full_path = is_executable_command(command)
+    if result:
+        return Result[str](value=f"{command} is {full_path}")
+    else:
+        return Result[str](value=f"{command}: invalid command")
+
+
 
 def run_executable(command: str, *args):
     result = subprocess.run([command, *args])
@@ -40,4 +50,5 @@ def run_executable(command: str, *args):
 built_ins = {
     "exit": exit_handler,
     "echo": echo_handler,
+    "type": type_handler,
 }
