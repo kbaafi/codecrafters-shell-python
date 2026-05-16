@@ -35,11 +35,12 @@ def echo_handler(*args):
 
 def type_handler(*args):
     command = args[0]
-    result, full_path = is_executable_command(command)
-    if result:
+    if command in built_ins:
+        return Result[str](value=f"{command} is a shell builtin")
+    found, full_path = is_executable_command(command)
+    if found:
         return Result[str](value=f"{command} is {full_path}")
-    else:
-        return Result[str](value=f"{command}: not found")
+    return Result[str](value=f"{command}: not found")
 
 
 
