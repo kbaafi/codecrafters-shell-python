@@ -14,7 +14,6 @@ def main():
             print(PROMPT, end="")
         else:
             print(f"Executing command: {command}")
-            print(PROMPT, end="")
 
 
 if __name__ == "__main__":
