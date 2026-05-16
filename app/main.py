@@ -28,6 +28,7 @@ def main():
 
         parts = user_input.strip().split()
         command, *args = parts
+        print(args)
 
         command_type, full_path = resolve_command(command)
 
