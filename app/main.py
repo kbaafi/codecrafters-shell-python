@@ -16,7 +16,7 @@ def main():
             if result.interrupt:
                 break
             else:
-                print(result.result, end='')
+                print(result.result)
 
 
 if __name__ == "__main__":

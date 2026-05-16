@@ -14,7 +14,7 @@ def echo_handler(*args):
 def type_handler(*args):
     queried_command = str(args[0])
     if queried_command in built_ins:
-        return StringResult(f'{queried_command} is a shell builtin')
+        return StringResult(f'{queried_command} is a shell builtin \n')
 
 
 built_ins = {
