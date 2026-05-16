@@ -9,7 +9,7 @@ def main():
     user_input = input(PROMPT)
     command = user_input.strip().split()[0]
     if command not in ALLOWED_COMMANDS:
-        print(f"Error: '{command}' is not a recognized command.")
+        print(f"Error: '{command}': command not found")
         sys.exit(1)
     else:
         print(f"Executing command: {command}")
