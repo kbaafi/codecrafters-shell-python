@@ -16,6 +16,7 @@ def is_executable_command(command) -> tuple[bool, Union[str, None]]:
 
 
 def clean_up_quotes(str_list: list[str]) -> list[str]:
+    print(str_list)
     single_quote = "'"
     double_quote = '"'
     results = []
