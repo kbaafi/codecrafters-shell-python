@@ -14,8 +14,8 @@ def main():
         if len(user_input) == 0 or not user_input:
             continue
 
-        parts = user_input.strip().split()
-        command, *args = parts
+        command, args = tuple(user_input.strip().split(" ", 1))
+        args = [args]
 
         args = clean_up_quotes(args)
 
