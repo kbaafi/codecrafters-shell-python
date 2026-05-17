@@ -44,6 +44,8 @@ def cd_handler(ctx: ShellContext, *args):
 
     if os.path.isabs(path):
         resolved = path
+    elif path == "~":
+        resolved = os.path.expanduser("~")
     else:
         resolved = os.path.normpath(os.path.join(ctx.cwd, path))
 
