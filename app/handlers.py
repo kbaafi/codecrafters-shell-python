@@ -59,7 +59,6 @@ def cd_handler(ctx: ShellContext, *args):
     return Result[str](value=f"cd: {path}: No such file or directory")
 
 
-
 def resolve_command(command: str) -> tuple[CommandType, str | None]:
     if command in built_ins:
         return CommandType.BUILTIN, None
