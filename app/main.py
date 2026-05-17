@@ -1,6 +1,6 @@
 from enum import Enum
 import sys
-from .common import PROMPT, is_executable_command
+from .common import PROMPT, clean_up_quotes
 from .handlers import built_ins, run_executable, CommandType, resolve_command
 import os
 from .shell_context import ShellContext
@@ -17,7 +17,7 @@ def main():
         parts = user_input.strip().split()
         command, *args = parts
 
-        args = 
+        args = clean_up_quotes(args)
 
         command_type, full_path = resolve_command(command)
 

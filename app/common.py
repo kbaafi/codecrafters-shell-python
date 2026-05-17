@@ -13,3 +13,17 @@ def is_executable_command(command) -> tuple[bool, Union[str, None]]:
         if os.path.isfile(full_path) and os.access(full_path, os.X_OK):
             return True, full_path
     return False, None
+
+
+def clean_up_quotes(str_list: list[str]) -> list[str]:
+    single_quote = "'"
+    double_quote = '"'
+    results = []
+    for item in str_list:
+        results.append((
+            item.strip(single_quote)
+            .strip(double_quote)
+            .replace(single_quote, '')
+            .replace(double_quote, '')
+        ))
+    return results
