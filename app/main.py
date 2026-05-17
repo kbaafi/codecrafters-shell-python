@@ -15,8 +15,7 @@ def main():
             continue
 
         command, args = tuple(user_input.strip().split(" ", 1))
-        args = [args]
-
+        args = args.split()
         args = clean_up_quotes(args)
 
         command_type, full_path = resolve_command(command)
