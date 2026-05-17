@@ -78,7 +78,7 @@ def type_handler(ctx: ShellContext, *args):
     
 
 def pwd_handler(ctx: ShellContext, *args):
-    return Result[str](value=os.getcwd())
+    return Result[str](value=ctx.cwd)
 
 
 
