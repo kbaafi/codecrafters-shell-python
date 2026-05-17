@@ -39,6 +39,7 @@ def main():
             case _:
                 print(f"{command}: command not found")
                 continue
+
         # Handle results
         if result.interrupt:
             break
