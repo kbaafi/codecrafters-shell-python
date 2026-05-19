@@ -15,10 +15,11 @@ def main():
         if len(user_input) == 0 or not user_input:
             continue
 
-        command, args = tuple(user_input.strip().split(" ", 1))
-        args = tokenize_args("".join(args))
+        parts = tuple(user_input.strip().split(" ", 1))
+        command = parts[0]
+        args = tokenize_args("".join(parts[1])) if len(parts) > 1 else []
 
-        command_type, full_path = resolve_command(command)
+        command_type, _ = resolve_command(command)
 
         match command_type:
             case CommandType.BUILTIN:
