@@ -1,9 +1,10 @@
 from enum import Enum
 import sys
-from .common import PROMPT, clean_up_quotes
+from .common import PROMPT, tokenize_args
 from .handlers import built_ins, run_executable, CommandType, resolve_command
 import os
 from .shell_context import ShellContext
+import shlex
 
 
 def main():
@@ -15,8 +16,7 @@ def main():
             continue
 
         command, args = tuple(user_input.strip().split(" ", 1))
-        args = args.split()
-        args = clean_up_quotes(args)
+        args = tokenize_args("".join(args))
 
         command_type, full_path = resolve_command(command)
 

@@ -15,16 +15,22 @@ def is_executable_command(command) -> tuple[bool, Union[str, None]]:
     return False, None
 
 
-def clean_up_quotes(str_list: list[str]) -> list[str]:
-    # print(str_list)
-    single_quote = "'"
-    double_quote = '"'
-    results = []
-    for item in str_list:
-        results.append((
-            item.strip(single_quote)
-            .strip(double_quote)
-            .replace(single_quote, '')
-            .replace(double_quote, '')
-        ))
-    return results
+def tokenize_args(input_str: str) -> list[str]:
+    tokens = []
+    current = []
+    quote_char = None
+
+    for ch in input_str:
+        if ch in ("'", '"') and quote_char is None:
+            quote_char = ch
+        elif ch == quote_char:
+            quote_char = None
+        elif ch == " " and quote_char is None:
+            if current:
+                tokens.append("".join(current))
+                current = []
+        else:
+            current.append(ch)
+    if current:
+        tokens.append("".join(current))
+    return tokens
