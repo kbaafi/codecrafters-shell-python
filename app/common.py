@@ -101,6 +101,7 @@ def tokenize_args(input_str: str) -> list[str]:
                 if ch == " ":
                     if current:
                         tokens.append("".join(current))
+                        tokens.append(ch)
                     else:
                         tokens.append(ch)
                     current = []
