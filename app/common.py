@@ -78,11 +78,15 @@ def tokenize_args(input_str: str) -> list[str]:
     for ch in input_str:
         match state:
             case CURSOR_STATE.OUT_QUOTE:
-                if ch in ("'", '"'):
+                if ch in ("'", '"') and quote_char is None:
                     quote_char = ch
                     state = CURSOR_STATE.IN_QUOTE
                 elif ch == "\\":
                     state = CURSOR_STATE.ESCAPE
+                    quote_char = None
+                elif ch in ("'", '"') and quote_char in ("'", '"'):
+                    quote_char = None
+                    state = CURSOR_STATE.OUT_QUOTE
                 # elif ch == " ":
                 #     if current:
                 #         tokens.append("".join(current))
