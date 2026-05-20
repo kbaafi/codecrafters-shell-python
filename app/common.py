@@ -32,6 +32,9 @@ def tokenize_args(input_str: str) -> list[str]:
                 current = []
         elif ch == "\\":
             escaped = True
+            if current:
+                tokens.append("".join(current))
+                current = []
         elif escaped:
             current.append(ch)
             escaped = False
