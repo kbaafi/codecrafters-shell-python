@@ -19,6 +19,7 @@ def tokenize_args(input_str: str) -> list[str]:
     tokens = []
     current = []
     quote_char = None
+    escaped = False
 
     for ch in input_str:
         if ch in ("'", '"') and quote_char is None:
@@ -29,6 +30,11 @@ def tokenize_args(input_str: str) -> list[str]:
             if current:
                 tokens.append("".join(current))
                 current = []
+        elif ch == "\\":
+            escaped = True
+        elif escaped:
+            current.append(ch)
+            escaped = False
         else:
             current.append(ch)
     if current:
