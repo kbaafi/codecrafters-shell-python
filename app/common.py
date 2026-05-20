@@ -87,10 +87,10 @@ def tokenize_args(input_str: str) -> list[str]:
                 elif ch in ("'", '"') and quote_char in ("'", '"'):
                     quote_char = None
                     state = CURSOR_STATE.OUT_QUOTE
-                # elif ch == " ":
-                #     if current:
-                #         tokens.append("".join(current))
-                #         current = []
+                elif ch == " ":
+                    if current:
+                        tokens.append("".join(current))
+                        current = []
                 else:
                     current.append(ch)
 
@@ -102,16 +102,7 @@ def tokenize_args(input_str: str) -> list[str]:
                     current.append(ch)
 
             case CURSOR_STATE.ESCAPE:
-                if ch == " ":
-                    if current:
-                        tokens.append("".join(current))
-                        tokens.append(ch)
-                    else:
-                        tokens.append(ch)
-                    current = []
-                else:
-                    tokens.append(ch)
-                    current = []
+                current.append(ch)
                 state = CURSOR_STATE.OUT_QUOTE
     if current:
         tokens.append("".join(current))
