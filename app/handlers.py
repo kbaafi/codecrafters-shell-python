@@ -3,8 +3,8 @@ import subprocess
 import os
 from enum import Enum
 
-from app.common import is_executable_command
-from app.shell_context import ShellContext
+from .common import is_executable_command
+from .shell_context import ShellContext
 
 T = TypeVar("T")
 
@@ -35,8 +35,7 @@ def exit_handler(ctx: ShellContext, *args):
 
 
 def echo_handler(ctx: ShellContext, *args):
-    result_msg = f'{"".join(args)}'
-    return Result[str](value=result_msg)
+    return Result[str](value=" ".join(args))
 
 
 def cd_handler(ctx: ShellContext, *args):
@@ -88,8 +87,7 @@ def pwd_handler(ctx: ShellContext, *args):
 
 
 def run_executable(command: str, *args):
-    print(args)
-    result = subprocess.run(*[command, *args])
+    result = subprocess.run([command, *args])
     return Result[subprocess.CompletedProcess](value=result)
 
 
