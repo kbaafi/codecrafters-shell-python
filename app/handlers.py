@@ -35,7 +35,8 @@ def exit_handler(ctx: ShellContext, *args):
 
 
 def echo_handler(ctx: ShellContext, *args):
-    result_msg = f'{"".join(args)}'
+    _args = [i.strip() for i in args]
+    result_msg = f'{"".join(_args)}'
     return Result[str](value=result_msg)
 
 
