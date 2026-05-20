@@ -105,7 +105,8 @@ def tokenize_args(input_str: str) -> list[str]:
                         tokens.append(ch)
                     current = []
                 else:
-                    current.append(ch)
+                    tokens.append(ch)
+                    current = []
                 state = CURSOR_STATE.OUT_QUOTE
     if current:
         tokens.append("".join(current))
