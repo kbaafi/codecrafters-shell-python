@@ -20,6 +20,7 @@ def tokenize_args(input_str: str) -> list[str]:
     current = []
     quote_char = None
     escaped = False
+    # quoted = 
 
     for ch in input_str:
         if ch in ("'", '"') and quote_char is None:
