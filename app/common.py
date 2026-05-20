@@ -83,10 +83,10 @@ def tokenize_args(input_str: str) -> list[str]:
                     state = CURSOR_STATE.IN_QUOTE
                 elif ch == "\\":
                     state = CURSOR_STATE.ESCAPE
-                elif ch == " ":
-                    if current:
-                        tokens.append("".join(current))
-                        current = []
+                # elif ch == " ":
+                #     if current:
+                #         tokens.append("".join(current))
+                #         current = []
                 else:
                     current.append(ch)
 
