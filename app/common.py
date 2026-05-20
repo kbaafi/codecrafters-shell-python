@@ -38,6 +38,8 @@ def tokenize_args(input_str: str) -> list[str]:
         elif escaped:
             current.append(ch)
             escaped = False
+            tokens.append("".join(current))
+            current = []
         else:
             current.append(ch)
     if current:
