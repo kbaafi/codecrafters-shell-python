@@ -101,10 +101,12 @@ def tokenize_args(input_str: str) -> list[str]:
                 if ch == " ":
                     if current:
                         tokens.append("".join(current))
-                        current = []
-                
-                # current.append(ch)
-                tokens.append(ch)
+                    else:
+                        tokens.append(ch)
+                    current = []
+                else:
+                    # current.append(ch)
+                    tokens.append(ch)
                 state = CURSOR_STATE.OUT_QUOTE
     if current:
         tokens.append("".join(current))
