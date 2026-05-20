@@ -98,10 +98,13 @@ def tokenize_args(input_str: str) -> list[str]:
                     current.append(ch)
 
             case CURSOR_STATE.ESCAPE:
+                if current:
+                    tokens.append("".join(current))
                 
                 # current.append(ch)
-                tokens.append([ch])
+                tokens.append(ch)
                 state = CURSOR_STATE.OUT_QUOTE
+                current = []
     if current:
         tokens.append("".join(current))
 
