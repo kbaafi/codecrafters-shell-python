@@ -11,7 +11,7 @@ def main():
     shell_context = ShellContext()
 
     while True:
-        user_input = input(PROMPT)
+        user_input = input(f'\n{PROMPT}')
         if len(user_input) == 0 or not user_input:
             continue
 
