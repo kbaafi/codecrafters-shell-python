@@ -1,5 +1,5 @@
 import pytest
-from app.common import tokenize_args
+from app.common import tokenize_user_input as tokenize_args
 
 
 def test_simple_args():

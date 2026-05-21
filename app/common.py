@@ -24,7 +24,7 @@ def is_executable_command(command) -> tuple[bool, Union[str, None]]:
     return False, None
 
 
-def tokenize_command(input_str: str) -> list[str]:
+def tokenize_user_input(input_str: str) -> list[str]:
     tokens = []
     current = []
     state = CURSOR_STATE.OUT_QUOTE
