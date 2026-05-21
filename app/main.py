@@ -42,7 +42,6 @@ def main():
                     file.write(result.value)
             else:
                 print(result.value)
-            print(PROMPT)
         
 
 if __name__ == "__main__":
