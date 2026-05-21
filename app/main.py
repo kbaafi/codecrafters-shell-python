@@ -41,7 +41,8 @@ def main():
                 with open(redirect_file, 'w') as file:
                     file.write(result.value)
             else:
-                sys.stdout.write(result.value)
+                output = result.value if result.value.endswith('\n') else result.value + '\n'
+                sys.stdout.write(output)
         
 
 if __name__ == "__main__":
