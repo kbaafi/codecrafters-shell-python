@@ -1,6 +1,6 @@
 from enum import Enum
 import sys
-from .common import PROMPT, tokenize_args
+from .common import PROMPT, tokenize_command
 from .handlers import built_ins, run_executable, CommandType, resolve_command
 import os
 from .shell_context import ShellContext
@@ -15,9 +15,12 @@ def main():
         if len(user_input) == 0 or not user_input:
             continue
 
-        parts = tuple(user_input.strip().split(" ", 1))
-        command = parts[0]
-        args = tokenize_args("".join(parts[1])) if len(parts) > 1 else []
+        result = tokenize_command(user_input)
+        command = result[0] if len(result) > 0 else ""
+        args = result[1:] if len(result) > 1 else []
+
+        if command == "":
+            continue
 
         command_type, _ = resolve_command(command)
 
