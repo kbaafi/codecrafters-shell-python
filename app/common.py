@@ -52,6 +52,7 @@ def tokenize_user_input(input_str: str) -> tuple[list[str], str|None]:
                         tokens.append("".join(current))
                         current = []
                     redirect_file = input_str[i+1:].strip()
+                    break
                 else:
                     current.append(ch)
 
