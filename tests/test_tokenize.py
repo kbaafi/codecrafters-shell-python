@@ -28,3 +28,15 @@ def test_single_token():
 
 def test_mixed_quotes():
     assert tokenize_args('"it\'s fine"') == ["it's fine"]
+
+def test_escape_quote_inside_double_quotes():
+    assert tokenize_args(r'"hello\"world"') == ['hello"world']
+
+def test_escape_backslash_inside_double_quotes():
+    assert tokenize_args(r'"hello\\world"') == ['hello\\world']
+
+def test_backslash_inside_single_quotes_is_literal():
+    assert tokenize_args(r"'hello\world'") == ['hello\\world']
+
+def test_escape_outside_quotes_keeps_char():
+    assert tokenize_args(r"hello\nworld") == ["hellonworld"]
