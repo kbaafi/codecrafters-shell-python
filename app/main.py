@@ -36,12 +36,12 @@ def main():
         # Handle results
         if result.interrupt:
             break
-        elif isinstance(result.value, str):
-            if redirect_file and redirect_file != "":
+        elif isinstance(result.value, str) and result.value:
+            if redirect_file:
                 with open(redirect_file, 'w') as file:
                     file.write(result.value)
             else:
-                print(result.value)
+                print(result.value, end='')
         
 
 if __name__ == "__main__":

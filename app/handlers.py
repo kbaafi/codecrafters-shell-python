@@ -1,5 +1,6 @@
 from typing import Generic, TypeVar
 import subprocess
+import sys
 import os
 from enum import Enum
 
@@ -88,6 +89,8 @@ def pwd_handler(ctx: ShellContext, *args):
 
 def run_executable(command: str, *args):
     result = subprocess.run([command, *args], capture_output=True, text=True)
+    if result.stderr:
+        print(result.stderr, end='', file=sys.stderr)
     return Result[str](value=result.stdout)
 
 
