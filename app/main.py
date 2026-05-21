@@ -30,7 +30,7 @@ def main():
             case CommandType.EXECUTABLE:
                 result = run_executable(command, *args)
             case _:
-                sys.stdout.write(f"{command}: command not found")
+                sys.stdout.write(f"{command}: command not found\n")
                 continue
 
         # Handle results
