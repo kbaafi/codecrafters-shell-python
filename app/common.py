@@ -31,6 +31,8 @@ def tokenize_user_input(input_str: str) -> tuple[list[str], str|None]:
     state = CURSOR_STATE.OUT_QUOTE
     quote_char = None
 
+    input_str = input_str.replace("1>", ">", 1)
+
     for i,ch in enumerate(input_str):
         match state:
             case CURSOR_STATE.OUT_QUOTE:
