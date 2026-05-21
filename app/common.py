@@ -24,13 +24,14 @@ def is_executable_command(command) -> tuple[bool, Union[str, None]]:
     return False, None
 
 
-def tokenize_user_input(input_str: str) -> list[str]:
+def tokenize_user_input(input_str: str) -> tuple[list[str], str|None]:
     tokens = []
     current = []
+    redirect_file = None
     state = CURSOR_STATE.OUT_QUOTE
     quote_char = None
 
-    for ch in input_str:
+    for i,ch in enumerate(input_str):
         match state:
             case CURSOR_STATE.OUT_QUOTE:
                 if ch in ("'", '"') and quote_char is None:
@@ -46,6 +47,11 @@ def tokenize_user_input(input_str: str) -> list[str]:
                     if current:
                         tokens.append("".join(current))
                         current = []
+                elif ch == ">":
+                    if current:
+                        tokens.append("".join(current))
+                        current = []
+                    redirect_file = input_str[i+1:].strip()
                 else:
                     current.append(ch)
 
@@ -68,4 +74,4 @@ def tokenize_user_input(input_str: str) -> list[str]:
     if current:
         tokens.append("".join(current))
 
-    return tokens
+    return tokens, redirect_file

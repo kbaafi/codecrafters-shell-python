@@ -15,7 +15,7 @@ def main():
         if len(user_input) == 0 or not user_input:
             continue
 
-        result = tokenize_user_input(user_input)
+        result, redirect_file = tokenize_user_input(user_input)
         command = result[0] if len(result) > 0 else ""
         args = result[1:] if len(result) > 1 else []
 
@@ -37,7 +37,11 @@ def main():
         if result.interrupt:
             break
         elif isinstance(result.value, str):
-            print(result.value)
+            if redirect_file and redirect_file != "":
+                with open(redirect_file, 'w') as file:
+                    file.write(result.value)
+            else:
+                print(result.value)
         
 
 if __name__ == "__main__":
