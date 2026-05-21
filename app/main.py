@@ -30,7 +30,7 @@ def main():
             case CommandType.EXECUTABLE:
                 result = run_executable(command, *args)
             case _:
-                print(f"{command}: command not found")
+                sys.stdout.write(f"{command}: command not found")
                 continue
 
         # Handle results
@@ -41,7 +41,7 @@ def main():
                 with open(redirect_file, 'w') as file:
                     file.write(result.value)
             else:
-                print(result.value, end='')
+                sys.stdout.write(result.value)
         
 
 if __name__ == "__main__":
