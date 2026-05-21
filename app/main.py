@@ -41,7 +41,7 @@ def main():
                 with open(redirect_file, 'w') as file:
                     file.write(result.value)
             else:
-                print(result.value, end='\n')
+                print(result.value)
         
 
 if __name__ == "__main__":
