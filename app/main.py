@@ -46,7 +46,7 @@ def main():
         #     output = result.error if result.error.endswith('\n') else result.error + '\n'
         #     sys.stdout.write(output)
 
-        if stdout_redirect is not None:
+        elif stdout_redirect is not None:
             with open(stdout_redirect, 'w') as file:
                 file.write(result.value or "")
         elif result.value:
