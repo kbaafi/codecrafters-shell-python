@@ -37,8 +37,6 @@ def main():
         if result.interrupt:
             break
         if stderr_redirect is not None:
-            if result.error:
-                print(result.error)
             with open(stderr_redirect, 'w') as file:
                 file.write(result.error or "")
         elif result.error:
