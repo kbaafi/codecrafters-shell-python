@@ -5,8 +5,11 @@ from app.common import tokenize_user_input
 def tokens(s):
     return tokenize_user_input(s)[0]
 
-def redirect(s):
+def stdout_redirect(s):
     return tokenize_user_input(s)[1]
+
+def stderr_redirect(s):
+    return tokenize_user_input(s)[2]
 
 
 def test_simple_args():
@@ -48,16 +51,29 @@ def test_backslash_inside_single_quotes_is_literal():
 def test_escape_outside_quotes_keeps_char():
     assert tokens(r"hello\nworld") == ["hellonworld"]
 
-def test_no_redirect():
-    assert redirect("foo bar") is None
+def test_no_stdout_redirect():
+    assert stdout_redirect("foo bar") is None
 
-def test_redirect_basic():
+def test_no_stderr_redirect():
+    assert stderr_redirect("foo bar") is None
+
+def test_stdout_redirect_basic():
     assert tokens("echo hello > out.txt") == ["echo", "hello"]
-    assert redirect("echo hello > out.txt") == "out.txt"
+    assert stdout_redirect("echo hello > out.txt") == "out.txt"
 
-def test_redirect_no_space():
-    assert tokens("echo hello>out.txt") == ["echo", "hello"]
-    assert redirect("echo hello>out.txt") == "out.txt"
+def test_stdout_redirect_explicit():
+    assert tokens("echo hello 1> out.txt") == ["echo", "hello"]
+    assert stdout_redirect("echo hello 1> out.txt") == "out.txt"
 
-def test_redirect_strips_filename():
-    assert redirect("echo hello >   out.txt  ") == "out.txt"
+def test_stderr_redirect_basic():
+    assert tokens("echo hello 2> err.txt") == ["echo", "hello"]
+    assert stderr_redirect("echo hello 2> err.txt") == "err.txt"
+
+def test_stderr_redirect_no_space():
+    assert tokens("echo hello 2>err.txt") == ["echo", "hello"]
+    assert stderr_redirect("echo hello 2>err.txt") == "err.txt"
+
+def test_both_redirects():
+    assert tokens("cmd 1> out.txt 2> err.txt") == ["cmd"]
+    assert stdout_redirect("cmd 1> out.txt 2> err.txt") == "out.txt"
+    assert stderr_redirect("cmd 1> out.txt 2> err.txt") == "err.txt"

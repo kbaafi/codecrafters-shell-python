@@ -43,10 +43,6 @@ def main():
                 print(result.value)
                 output = result.value if result.value.endswith('\n') else result.value + '\n'
                 sys.stdout.write(output)
-        # elif result.error:
-        #     output = result.error if result.error.endswith('\n') else result.error + '\n'
-        #     sys.stdout.write(output)
-
         elif stdout_redirect is not None:
             with open(stdout_redirect, 'w') as file:
                 file.write(result.value or "")

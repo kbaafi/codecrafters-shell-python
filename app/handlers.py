@@ -20,23 +20,7 @@ class CommandType(Enum):
 class Result:
     value: Optional[str] = None
     error: Optional[str] = None
-    interrupt: Optional[bool] = False
-
-# class Result():
-#     def __init__(self, value: T, error: T, interrupt: bool = False) -> None:
-#         self._value = value
-#         self._interrupt = interrupt
-#         self._error = error
-
-
-#     @property
-#     def value(self) -> T:
-#         return self._value
-    
-#     @property
-#     def interrupt(self) -> bool:
-#         return self._interrupt
-    
+    interrupt: Optional[bool] = False   
 
 
 def exit_handler(ctx: ShellContext, *args):

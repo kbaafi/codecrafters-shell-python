@@ -127,7 +127,7 @@ def tokenize_user_input(input_str: str) -> tuple[list[str], str|None, str|None]:
                     if current:
                         tokens.append("".join(current))
                         current = []
-                    stdout_redirect, i = read_word(input_str, i)
+                    stdout_redirect, i = read_word(input_str, i + 1)
                 else:
                     current.append(ch)
 
