@@ -36,16 +36,20 @@ def main():
         # Handle results
         if result.interrupt:
             break
-        elif isinstance(result.value, str) and result.value:
+        if result.error:
+            if stderr_redirect:
+                with open(stderr_redirect, 'w') as file:
+                    file.write(result.error)
+            else:
+                output = result.error if result.error.endswith('\n') else result.error + '\n'
+                sys.stdout.write(output)
+        elif result.value:
             if stdout_redirect:
                 with open(stdout_redirect, 'w') as file:
                     file.write(result.value)
             else:
                 output = result.value if result.value.endswith('\n') else result.value + '\n'
                 sys.stdout.write(output)
-            if stderr_redirect:
-                with open(stderr_redirect, 'w') as file:
-                    file.write(result.value)
         
 
 if __name__ == "__main__":

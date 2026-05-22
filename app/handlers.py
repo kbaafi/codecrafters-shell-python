@@ -1,8 +1,9 @@
-from typing import Generic, TypeVar
+from typing import Generic, Optional, TypeVar
 import subprocess
 import sys
 import os
 from enum import Enum
+from dataclasses import dataclass
 
 from .common import is_executable_command
 from .shell_context import ShellContext
@@ -15,28 +16,36 @@ class CommandType(Enum):
     INVALID = "INVALID"
 
 
-class Result(Generic[T]):
-    def __init__(self, value: T, interrupt: bool = False) -> None:
-        self._value = value
-        self._interrupt = interrupt
+@dataclass
+class Result:
+    value: Optional[str] = None
+    error: Optional[str] = None
+    interrupt: Optional[bool] = False
 
-    @property
-    def value(self) -> T:
-        return self._value
+# class Result():
+#     def __init__(self, value: T, error: T, interrupt: bool = False) -> None:
+#         self._value = value
+#         self._interrupt = interrupt
+#         self._error = error
+
+
+#     @property
+#     def value(self) -> T:
+#         return self._value
     
-    @property
-    def interrupt(self) -> bool:
-        return self._interrupt
+#     @property
+#     def interrupt(self) -> bool:
+#         return self._interrupt
     
 
 
 def exit_handler(ctx: ShellContext, *args):
     _ = args
-    return Result[None](value=None, interrupt=True)
+    return Result(interrupt=True)
 
 
 def echo_handler(ctx: ShellContext, *args):
-    return Result[str](value=" ".join(args))
+    return Result(value=" ".join(args))
 
 
 def cd_handler(ctx: ShellContext, *args):
@@ -55,8 +64,8 @@ def cd_handler(ctx: ShellContext, *args):
 
     if os.path.isdir(resolved):
         ctx.cwd = resolved
-        return Result[None](value=None)
-    return Result[str](value=f"cd: {path}: No such file or directory")
+        return Result()
+    return Result(value=f"cd: {path}: No such file or directory")
 
 
 def resolve_command(command: str) -> tuple[CommandType, str | None]:
@@ -75,23 +84,24 @@ def type_handler(ctx: ShellContext, *args):
 
     match command_type:
         case CommandType.BUILTIN:
-            return Result[str](value=f"{command} is a shell builtin")
+            return Result(value=f"{command} is a shell builtin")
         case CommandType.EXECUTABLE:
-            return Result[str](value=f"{command} is {path}")
+            return Result(value=f"{command} is {path}")
         case CommandType.INVALID:
-            return Result[str](value=f"{command}: not found")
+            return Result(value=f"{command}: not found")
     
 
 def pwd_handler(ctx: ShellContext, *args):
-    return Result[str](value=ctx.cwd)
+    return Result(value=ctx.cwd)
 
 
 
 def run_executable(command: str, *args):
     result = subprocess.run([command, *args], capture_output=True, text=True)
     if result.stderr:
-        print(result.stderr, end='', file=sys.stderr)
-    return Result[str](value=result.stdout)
+        #print(result.stderr, end='', file=sys.stderr)
+        return Result(error=result.stderr)
+    return Result(value=result.stdout)
 
 
 built_ins = {
