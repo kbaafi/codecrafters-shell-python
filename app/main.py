@@ -39,9 +39,12 @@ def main():
         if stderr_redirect is not None:
             with open(stderr_redirect, 'w') as file:
                 file.write(result.error or "")
-        elif result.error:
-            output = result.error if result.error.endswith('\n') else result.error + '\n'
-            sys.stdout.write(output)
+            if result.value:
+                output = result.value if result.value.endswith('\n') else result.value + '\n'
+                sys.stdout.write(output)
+        # elif result.error:
+        #     output = result.error if result.error.endswith('\n') else result.error + '\n'
+        #     sys.stdout.write(output)
 
         if stdout_redirect is not None:
             with open(stdout_redirect, 'w') as file:
