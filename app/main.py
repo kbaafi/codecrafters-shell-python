@@ -40,6 +40,7 @@ def main():
             with open(stderr_redirect, 'w') as file:
                 file.write(result.error or "")
             if result.value:
+                print(result.value)
                 output = result.value if result.value.endswith('\n') else result.value + '\n'
                 sys.stdout.write(output)
         # elif result.error:
