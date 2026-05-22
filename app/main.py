@@ -39,16 +39,16 @@ def main():
         if stderr_redirect is not None:
             with open(stderr_redirect, 'w') as file:
                 file.write(result.error or "")
-            if result.value:
-                print(result.value)
-                output = result.value if result.value.endswith('\n') else result.value + '\n'
-                sys.stdout.write(output)
+            # if result.value:
+            #     print(result.value)
+            #     output = result.value if result.value.endswith('\n') else result.value + '\n'
+            #     sys.stdout.write(output)
         elif stdout_redirect is not None:
             with open(stdout_redirect, 'w') as file:
                 file.write(result.value or "")
-        elif result.value:
-            output = result.value if result.value.endswith('\n') else result.value + '\n'
-            sys.stdout.write(output)
+            if result.value:
+                output = result.value if result.value.endswith('\n') else result.value + '\n'
+                sys.stdout.write(output)
         
         
 
