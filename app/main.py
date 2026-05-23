@@ -44,9 +44,11 @@ def make_completer(shell: Shell):
                 except OSError:
                     options = []
         if len(options) == 0:
+            sys.stdout.write("\a")
+            sys.stdout.flush()
             return None
-        if len(options) == 1:
-            return options[0] if state == 0 else None
+        # if len(options) == 1:
+        #     return options[0] if state == 0 else None
         if state == 0:
             sys.stdout.write("\a")
             sys.stdout.flush()
