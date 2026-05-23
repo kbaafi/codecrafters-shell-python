@@ -123,6 +123,18 @@ def test_completes_absolute_path_trailing_slash(tmp_path):
     assert f"{tmp_path}/data.csv " in matches
 
 
+def test_completes_relative_path(tmp_path):
+    subdir = tmp_path / "docs"
+    subdir.mkdir()
+    (subdir / "readme.txt").write_text("")
+    shell = make_shell(commands=["cat"], cwd=str(tmp_path))
+    completer = make_completer(shell)
+    partial = "docs/re"
+    with patch("readline.get_line_buffer", return_value=f"cat {partial}"):
+        matches = complete_all(completer, partial)
+    assert any("readme.txt" in m for m in matches)
+
+
 def test_invalid_path_returns_empty():
     shell = make_shell(commands=["cat"])
     completer = make_completer(shell)
