@@ -14,7 +14,8 @@ def make_completer(shell: Shell):
                 f"{cmd} " for cmd in shell.known_commands if cmd.startswith(text)
             ]
         else:
-            partial = "" if line.endswith(" ") else text
+            last_token = tokens[-1] if not line.endswith(" ") else ""
+            partial = last_token
 
             if "/" not in partial:
                 options = [

@@ -135,6 +135,18 @@ def test_completes_relative_path(tmp_path):
     assert "docs/readme.txt " in matches
 
 
+def test_completes_relative_path_trailing_slash(tmp_path):
+    subdir = tmp_path / "apple" / "raspberry"
+    subdir.mkdir(parents=True)
+    (subdir / "mango.txt").write_text("")
+    shell = make_shell(commands=["wc"], cwd=str(tmp_path))
+    completer = make_completer(shell)
+    partial = "apple/raspberry/"
+    with patch("readline.get_line_buffer", return_value=f"wc {partial}"):
+        matches = complete_all(completer, "")
+    assert "apple/raspberry/mango.txt " in matches
+
+
 def test_invalid_path_returns_empty():
     shell = make_shell(commands=["cat"])
     completer = make_completer(shell)
