@@ -100,6 +100,38 @@ def test_no_file_match_returns_empty(tmp_path):
         assert complete_all(completer, "zzz") == []
 
 
+# --- file vs directory distinction ---
+
+
+def test_directory_gets_trailing_slash(tmp_path):
+    (tmp_path / "mydir").mkdir()
+    shell = make_shell(commands=["ls"], cwd=str(tmp_path))
+    completer = make_completer(shell)
+    with patch("readline.get_line_buffer", return_value="ls my"):
+        matches = complete_all(completer, "my")
+    assert "mydir/" in matches
+
+
+def test_file_gets_trailing_space(tmp_path):
+    (tmp_path / "myfile.txt").write_text("")
+    shell = make_shell(commands=["cat"], cwd=str(tmp_path))
+    completer = make_completer(shell)
+    with patch("readline.get_line_buffer", return_value="cat my"):
+        matches = complete_all(completer, "my")
+    assert "myfile.txt " in matches
+
+
+def test_mixed_file_and_dir(tmp_path):
+    (tmp_path / "data").mkdir()
+    (tmp_path / "data.csv").write_text("")
+    shell = make_shell(commands=["ls"], cwd=str(tmp_path))
+    completer = make_completer(shell)
+    with patch("readline.get_line_buffer", return_value="ls da"):
+        matches = complete_all(completer, "da")
+    assert "data/" in matches
+    assert "data.csv " in matches
+
+
 # --- path completion ---
 
 

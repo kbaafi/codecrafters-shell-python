@@ -40,11 +40,6 @@ def make_completer(shell: Shell):
                     options = build_file_system_completion_options(
                         base_dir=resolve_dir, partial_name=partial_file
                     )
-                    # options = [
-                    #     f"{file} "
-                    #     for file in os.listdir(resolve_dir)
-                    #     if file.startswith(partial_file)
-                    # ]
                 except OSError:
                     options = []
         return options[state] if state < len(options) else None
