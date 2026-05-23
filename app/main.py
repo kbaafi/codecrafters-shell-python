@@ -28,7 +28,7 @@ def make_completer(shell: Shell):
 
                 if not partial.startswith("/"):
                     # relative search
-                    partial_dir = f"{shell._ctx.cwd}/{partial_dir}"
+                    partial_dir = f"{shell._ctx.cwd}/{'' if partial_dir == "/" else partial_dir[:-1]}"
 
                 try:
                     options = [
