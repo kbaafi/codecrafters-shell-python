@@ -13,7 +13,7 @@ def make_completer(shell: Shell):
                 options.append(f"{entry.name} ")
             elif entry.is_dir() and entry.name.startswith(partial_name):
                 options.append(f"{entry.name}/")
-        return open
+        return options
 
     def completer(text: str, state):
         line = readline.get_line_buffer()
@@ -28,12 +28,6 @@ def make_completer(shell: Shell):
 
             if "/" not in partial:
                 build_file_system_completion_options(shell._ctx.cwd, partial)
-
-                # options = [
-                #     f"{file} "
-                #     for file in os.listdir(shell._ctx.cwd)
-                #     if file.startswith(partial)
-                # ]
             else:
                 display_dir, partial_file = partial.rsplit("/", 1)
                 resolve_dir = (
