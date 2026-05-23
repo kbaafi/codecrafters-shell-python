@@ -43,17 +43,19 @@ def make_completer(shell: Shell):
                     )
                 except OSError:
                     options = []
-        # result = options[state] if state < len(options) else None
-        if not len(options) == 0:
-            sys.stdout.write("\x07")
-        elif state == 0:
-            sys.stdout.write("\x07")
-        elif state == 1:
-            result = " ".join(options)
-            print(repr(options), state, result)
-        else:
-            result = options[0]
-        return result
+        if len(options) == 0:
+            return None
+        if len(options) == 1:
+            return options[0] if state == 0 else None
+        if state == 0:
+            sys.stdout.write("\a")
+            sys.stdout.flush()
+            return None
+        if state == 1:
+            sys.stdout.write("\n" + "  ".join(options) + "\n")
+            sys.stdout.flush()
+            return None
+        return None
 
     return completer
 
