@@ -21,26 +21,32 @@ def get_executables() -> dict[str, str]:
     executables = {}
 
     for dir in dirs:
-        executables.update({ \
-                f: os.path.join(dir, f) \
-                for f in dir if f not in executables \
-                and os.path.isfile(os.path.join(dir, f)) \
-                and os.access(os.path.join(dir, f), os.X_OK) \
-            }
-        )
+        if not os.path.isdir(dir):
+            continue
+        executables.update({
+            f: os.path.join(dir, f)
+            for f in os.listdir(dir)
+            if f not in executables
+            and os.path.isfile(os.path.join(dir, f))
+            and os.access(os.path.join(dir, f), os.X_OK)
+        })
     return executables
+
+
+def _default_built_ins():
+    return {
+        "exit": exit_handler,
+        "echo": echo_handler,
+        "type": type_handler,
+        "pwd": pwd_handler,
+        "cd": cd_handler,
+    }
 
 
 @dataclass
 class ShellContext:
     cwd: str = field(default_factory=os.getcwd)
-    built_ins: dict = field(default={
-        "exit": exit_handler,
-        "echo": echo_handler,
-        "type": type_handler,
-        "pwd": pwd_handler,
-        "cd": cd_handler
-    })
+    built_ins: dict = field(default_factory=_default_built_ins)
     executables: dict = field(default_factory=get_executables)
     curr_result: Result = field(default_factory=Result)
 
@@ -48,7 +54,7 @@ class ShellContext:
         if command in self.built_ins:
             self.curr_result = self.built_ins[command](self, *args)
         elif command in self.executables:
-            path = self.executables["command"]
+            path = self.executables[command]
             self.curr_result = run_executable(path, *args)
         else:
             self.curr_result = Result(error=f"{command}: command not found\n")

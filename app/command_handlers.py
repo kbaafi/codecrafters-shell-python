@@ -1,7 +1,7 @@
+from __future__ import annotations
 import subprocess
 import os
 from typing import Union
-from .shell_context import ShellContext
 from .models import Result, CommandType
 
 
