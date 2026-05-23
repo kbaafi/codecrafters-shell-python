@@ -33,7 +33,7 @@ def make_completer(shell: Shell):
 
                 try:
                     options = [
-                        f"{display_dir}/{file} "
+                        f"{file} "
                         for file in os.listdir(resolve_dir)
                         if file.startswith(partial_file)
                     ]
