@@ -51,14 +51,14 @@ def make_completer(shell: Shell):
 
         if len(cached_options) == 0:
             return None
-        if len(cached_options) == 1:
+        if len(cached_options) == 1 and state == 0:
             return cached_options[0] if state == 0 else None
-        if state == 0:
+        if state == 0 and len(cached_options) > 1:
             sys.stdout.write("\a")
             return ""
         if state == 1:
             sys.stdout.write("\n" + " ".join(cached_options) + "\n")
-            return None
+            return ""
         return None
 
     return completer
