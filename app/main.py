@@ -57,7 +57,7 @@ def make_completer(shell: Shell):
             sys.stdout.write("\a")
             return ""
         if state == 1:
-            sys.stdout.write("\n" + "  ".join(cached_options) + "\n")
+            sys.stdout.write("  ".join(sorted(cached_options)) + "\n")
             sys.stdout.flush()
             readline.redisplay()
             return None
