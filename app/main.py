@@ -7,7 +7,7 @@ import readline
 
 
 def completer(text, state):
-    options = [cmd for cmd in built_ins if cmd.startswith(text)]
+    options = [f'{cmd} ' for cmd in built_ins if cmd.startswith(text)]
     return options[state] if state < len(options) else None
 
 
