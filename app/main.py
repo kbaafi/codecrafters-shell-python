@@ -1,5 +1,6 @@
 import os
 import readline
+import sys
 
 from .common import PROMPT, ParsedInput, tokenize_user_input
 from .shell import Shell
@@ -42,7 +43,10 @@ def make_completer(shell: Shell):
                     )
                 except OSError:
                     options = []
-        return options[state] if state < len(options) else None
+        result = options[state] if state < len(options) else None
+        if not result:
+            sys.stdout.write("\x07")
+        return result
 
     return completer
 
