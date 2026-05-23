@@ -5,9 +5,7 @@ from .common import PROMPT, ParsedInput, tokenize_user_input
 from .shell import Shell
 
 
-def main():
-    shell = Shell()
-
+def make_completer(shell: Shell):
     def completer(text: str, state):
         line = readline.get_line_buffer()
         tokens = line.strip().split()
@@ -16,15 +14,33 @@ def main():
                 f"{cmd} " for cmd in shell.known_commands if cmd.startswith(text)
             ]
         else:
-            partial = tokens[-1] if line.endswith(" ") else text
-            options = [
-                f"{file} "
-                for file in os.listdir(shell._ctx.cwd)
-                if file.startswith(partial)
-            ]
+            partial = "" if line.endswith(" ") else text
 
+            if "/" not in partial:
+                options = [
+                    f"{file} "
+                    for file in os.listdir(shell._ctx.cwd)
+                    if file.startswith(partial)
+                ]
+            else:
+                partial_dir = partial.rsplit("/", 1)[0] or "/"
+                partial_file = partial.rsplit("/", 1)[1]
+                try:
+                    options = [
+                        f"{partial_dir}/{file} "
+                        for file in os.listdir(partial_dir)
+                        if file.startswith(partial_file)
+                    ]
+                except OSError:
+                    options = []
         return options[state] if state < len(options) else None
 
+    return completer
+
+
+def main():
+    shell = Shell()
+    completer = make_completer(shell)
     readline.set_completer(completer)
     readline.parse_and_bind("tab: complete")
 
