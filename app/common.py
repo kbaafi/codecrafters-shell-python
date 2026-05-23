@@ -133,7 +133,9 @@ def output_result(result: Result, parsed_input: ParsedInput):
     elif parsed_input.stdout_redirect is not None:
         _to_file(result.value, parsed_input.stdout_redirect, parsed_input.stdout_append)
         _to_screen(result.error)
-    else:
-        _to_screen(result.value or result.error)
+    elif result.value:
+        _to_screen(result.value)
+    elif result.error:
+        _to_screen(result.error)
 
 
