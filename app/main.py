@@ -7,7 +7,7 @@ from .shell import Shell
 
 
 def make_completer(shell: Shell):
-    cached_options = []
+    cached = {"options": [], "text": None}
 
     def build_file_system_completion_options(base_dir, partial_name):
         options: list[str] = []
@@ -16,23 +16,25 @@ def make_completer(shell: Shell):
                 options.append(f"{entry.name} ")
             elif entry.is_dir() and entry.name.startswith(partial_name):
                 options.append(f"{entry.name}/")
-        return sorted(options)
+        options = sorted(options)
+        return {"options": options, "text": " ".join(options)}
 
     def completer(text: str, state: int):
-        nonlocal cached_options
+        nonlocal cached
         if state == 0:
             line = readline.get_line_buffer()
             tokens = line.strip().split()
             if len(tokens) == 0 or (len(tokens) == 1 and not line.endswith(" ")):
-                cached_options = [
+                cached["options"] = [
                     f"{cmd} " for cmd in shell.known_commands if cmd.startswith(text)
                 ]
+                cached["text"] = text
             else:
                 last_token = tokens[-1] if not line.endswith(" ") else ""
                 partial = last_token
 
                 if "/" not in partial:
-                    cached_options = build_file_system_completion_options(
+                    cached = build_file_system_completion_options(
                         shell._ctx.cwd, partial
                     )
                 else:
@@ -43,16 +45,16 @@ def make_completer(shell: Shell):
                         else os.path.join(shell._ctx.cwd, display_dir or "/")
                     )
                     try:
-                        cached_options = build_file_system_completion_options(
+                        cached = build_file_system_completion_options(
                             base_dir=resolve_dir, partial_name=partial_file
                         )
                     except OSError:
-                        cached_options = []
+                        cached = {"options": [], "text": ""}
 
-        if len(cached_options) == 0:
+        if len(cached["options"]) == 0:
             return None
-        if len(cached_options) == 1:
-            return cached_options[0] if state == 0 else None
+        if len(cached["options"]) == 1:
+            return cached["options"][0] if state == 0 else None
         if state == 0:
             sys.stdout.write("\a")
             return ""
@@ -61,7 +63,7 @@ def make_completer(shell: Shell):
             # sys.stdout.flush()
             # readline.redisplay()
             # sys.stdout.flush()
-            return cached_options
+            return cached["text"]
             # return None
         return None
 
