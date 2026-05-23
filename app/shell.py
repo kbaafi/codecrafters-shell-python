@@ -72,8 +72,8 @@ class Shell:
         if command in self._ctx.built_ins:
             self._ctx.curr_result = self._ctx.built_ins[command](self._ctx, *args)
         elif command in self._ctx.executables:
-            path = self._ctx.executables[command]
-            self._ctx.curr_result = run_executable(path, *args)
+            _ = self._ctx.executables[command]
+            self._ctx.curr_result = run_executable(command, *args)
         else:
             self._ctx.curr_result = Result(error=f"{command}: command not found\n")
 
