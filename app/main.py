@@ -1,3 +1,4 @@
+import os
 import readline
 
 from .common import PROMPT, ParsedInput, tokenize_user_input
@@ -7,8 +8,25 @@ from .shell import Shell
 def main():
     shell = Shell()
 
-    def completer(text, state):
-        options = [f"{cmd} " for cmd in shell.known_commands if cmd.startswith(text)]
+    def completer(text: str, state):
+        tokens = text.strip().split("0")
+        if len(tokens) == 1:
+            options = [
+                f"{cmd} " for cmd in shell.known_commands if cmd.startswith(text)
+            ]
+        elif len(tokens) > 1:
+            args = "".join(tokens[1:])
+            command = tokens[0]
+            options = [
+                f"{command} {file} "
+                for file in os.listdir(shell._ctx.cwd)
+                if os.path.isfile(os.path.join(shell._ctx.cwd, file))
+                and os.access(
+                    os.path.join(shell._ctx.cwd, file), os.R_OK | os.W_OK | os.F_OK
+                )
+                and os.path.join(shell._ctx.cwd, file).startswith(args)
+            ]
+
         return options[state] if state < len(options) else None
 
     readline.set_completer(completer)
