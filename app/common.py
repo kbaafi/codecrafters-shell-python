@@ -2,7 +2,7 @@ import os
 import sys
 from typing import Union, Optional
 from enum import Enum, auto
-from handlers import Result
+from .handlers import Result
 
 
 
