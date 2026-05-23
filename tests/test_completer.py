@@ -132,7 +132,7 @@ def test_completes_relative_path(tmp_path):
     partial = "docs/re"
     with patch("readline.get_line_buffer", return_value=f"cat {partial}"):
         matches = complete_all(completer, partial)
-    assert any("readme.txt" in m for m in matches)
+    assert "docs/readme.txt " in matches
 
 
 def test_invalid_path_returns_empty():

@@ -23,16 +23,17 @@ def make_completer(shell: Shell):
                     if file.startswith(partial)
                 ]
             else:
-                partial_dir = partial.rsplit("/", 1)[0] or "/"
-                partial_file = partial.rsplit("/", 1)[1]
-
-                if not partial.startswith("/"):
-                    partial_dir = os.path.join(shell._ctx.cwd, partial_dir)
+                display_dir, partial_file = partial.rsplit("/", 1)
+                resolve_dir = (
+                    display_dir
+                    if partial.startswith("/")
+                    else os.path.join(shell._ctx.cwd, display_dir or "/")
+                )
 
                 try:
                     options = [
-                        f"{partial_dir}/{file} "
-                        for file in os.listdir(partial_dir)
+                        f"{display_dir}/{file} "
+                        for file in os.listdir(resolve_dir)
                         if file.startswith(partial_file)
                     ]
                 except OSError:
