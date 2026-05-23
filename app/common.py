@@ -1,6 +1,6 @@
 import os
 import sys
-from typing import Union, Optional
+from typing import Optional
 from enum import Enum, auto
 from .handlers import Result
 
@@ -14,17 +14,6 @@ class CURSOR_STATE(Enum):
     OUT_QUOTE = auto()
     ESCAPE = auto()
     IN_QUOTE_ESCAPE = auto()
-
-
-def is_executable_command(command) -> tuple[bool, Union[str, None]]:
-    path = os.environ["PATH"]
-    dirs = path.split(os.pathsep)
-
-    for dir in dirs:
-        full_path = os.path.join(dir, command)
-        if os.path.isfile(full_path) and os.access(full_path, os.X_OK):
-            return True, full_path
-    return False, None
 
 
 def tokenize_user_input(input_str: str) -> tuple[list[str], str|None, str|None]:

@@ -5,7 +5,7 @@ import os
 from enum import Enum
 from dataclasses import dataclass
 
-from .common import is_executable_command
+from typing import Union
 from .shell_context import ShellContext
 
 T = TypeVar("T")
@@ -20,7 +20,18 @@ class CommandType(Enum):
 class Result:
     value: Optional[str] = None
     error: Optional[str] = None
-    interrupt: Optional[bool] = False   
+    interrupt: Optional[bool] = False
+
+
+def is_executable_command(command) -> tuple[bool, Union[str, None]]:
+    path = os.environ["PATH"]
+    dirs = path.split(os.pathsep)
+
+    for dir in dirs:
+        full_path = os.path.join(dir, command)
+        if os.path.isfile(full_path) and os.access(full_path, os.X_OK):
+            return True, full_path
+    return False, None 
 
 
 def exit_handler(ctx: ShellContext, *args):
