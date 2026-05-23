@@ -60,7 +60,8 @@ def make_completer(shell: Shell):
             # sys.stdout.write("  ".join(sorted(cached_options)) + "\n")
             # sys.stdout.flush()
             # readline.redisplay()
-            return "  ".join(sorted(cached_options))
+            sys.stdout.flush()
+            return " ".join(sorted(cached_options))
             # return None
         return None
 
