@@ -11,13 +11,13 @@ def run(
 ):
     shell = Shell()
     shell._ctx.curr_result = result
-    parsed = ParsedInput(
+    shell._parsed_input = ParsedInput(
         stdout_redirect=stdout_redirect,
         stderr_redirect=stderr_redirect,
         stdout_append=stdout_append,
         stderr_append=stderr_append,
     )
-    shell.output_results(parsed)
+    shell.output_results()
 
 
 def test_value_printed_to_stdout(capsys):

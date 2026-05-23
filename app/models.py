@@ -12,6 +12,14 @@ class ParsedInput:
     stdout_append: bool = False
     stderr_append: bool = False
 
+    @property
+    def command(self) -> str:
+        return self.tokens[0] if len(self.tokens) > 0 else ""
+
+    @property
+    def args(self) -> list[str]:
+        return self.tokens[1:] if len(self.tokens) > 1 else []
+
 
 @dataclass
 class Result:

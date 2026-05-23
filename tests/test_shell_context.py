@@ -1,6 +1,6 @@
 import os
 
-from app.models import CommandType
+from app.models import CommandType, ParsedInput
 from app.shell import Shell
 
 
@@ -25,38 +25,38 @@ def test_executables_populated():
 
 def test_execute_builtin_echo():
     shell = Shell()
-    shell.execute("echo", "hello", "world")
+    shell.execute(ParsedInput(tokens=["echo", "hello", "world"]))
     assert shell._ctx.curr_result.value == "hello world"
 
 
 def test_execute_builtin_pwd():
     shell = Shell()
-    shell.execute("pwd")
+    shell.execute(ParsedInput(tokens=["pwd"]))
     assert shell._ctx.curr_result.value == shell._ctx.cwd
 
 
 def test_execute_builtin_cd(tmp_path):
     shell = Shell()
-    shell.execute("cd", str(tmp_path))
+    shell.execute(ParsedInput(tokens=["cd", str(tmp_path)]))
     assert shell._ctx.cwd == str(tmp_path)
 
 
 def test_execute_cd_invalid_path():
     shell = Shell()
-    shell.execute("cd", "/nonexistent/path/xyz")
+    shell.execute(ParsedInput(tokens=["cd", "/nonexistent/path/xyz"]))
     assert shell._ctx.curr_result.value is not None
     assert "No such file or directory" in shell._ctx.curr_result.value
 
 
 def test_execute_exit():
     shell = Shell()
-    shell.execute("exit")
+    shell.execute(ParsedInput(tokens=["exit"]))
     assert shell._ctx.curr_result.interrupt is True
 
 
 def test_execute_unknown_command():
     shell = Shell()
-    shell.execute("notarealcommand")
+    shell.execute(ParsedInput(tokens=["notarealcommand"]))
     assert shell._ctx.curr_result.error is not None
     assert "command not found" in shell._ctx.curr_result.error
 
@@ -84,20 +84,20 @@ def test_resolve_command_invalid():
 
 def test_type_handler_builtin():
     shell = Shell()
-    shell.execute("type", "echo")
+    shell.execute(ParsedInput(tokens=["type", "echo"]))
     assert shell._ctx.curr_result.value == "echo is a shell builtin"
 
 
 def test_type_handler_executable():
     shell = Shell()
-    shell.execute("type", "ls")
+    shell.execute(ParsedInput(tokens=["type", "ls"]))
     assert shell._ctx.curr_result.value is not None
     assert "ls is" in shell._ctx.curr_result.value
 
 
 def test_type_handler_invalid():
     shell = Shell()
-    shell.execute("type", "notarealcommand")
+    shell.execute(ParsedInput(tokens=["type", "notarealcommand"]))
     assert shell._ctx.curr_result.value is not None
     assert "not found" in shell._ctx.curr_result.value
 

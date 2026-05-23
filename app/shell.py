@@ -67,25 +67,37 @@ class Shell:
             executables=get_executables(),
             curr_result=Result(value=None, error=None),
         )
+        self._parsed_input: ParsedInput = ParsedInput(tokens=[])
 
-    def execute(self, command: str, *args):
-        if command in self._ctx.built_ins:
-            self._ctx.curr_result = self._ctx.built_ins[command](self._ctx, *args)
-        elif command in self._ctx.executables:
-            self._ctx.curr_result = run_executable(command, *args)
+    def execute(self, parsed_input: ParsedInput):
+        self._parsed_input = parsed_input
+        if parsed_input.command in self._ctx.built_ins:
+            self._ctx.curr_result = self._ctx.built_ins[parsed_input.command](
+                self._ctx, *parsed_input.args
+            )
+        elif parsed_input.command in self._ctx.executables:
+            self._ctx.curr_result = run_executable(
+                parsed_input.command, *parsed_input.args
+            )
         else:
-            self._ctx.curr_result = Result(error=f"{command}: command not found\n")
+            self._ctx.curr_result = Result(
+                error=f"{parsed_input.command}: command not found\n"
+            )
 
-    def output_results(self, parsed_input: ParsedInput):
+    def output_results(self):
         result = self._ctx.curr_result
-        if parsed_input.stderr_redirect is not None:
+        if self._parsed_input.stderr_redirect is not None:
             _to_file(
-                result.error, parsed_input.stderr_redirect, parsed_input.stderr_append
+                result.error,
+                self._parsed_input.stderr_redirect,
+                self._parsed_input.stderr_append,
             )
             _to_screen(result.value)
-        elif parsed_input.stdout_redirect is not None:
+        elif self._parsed_input.stdout_redirect is not None:
             _to_file(
-                result.value, parsed_input.stdout_redirect, parsed_input.stdout_append
+                result.value,
+                self._parsed_input.stdout_redirect,
+                self._parsed_input.stdout_append,
             )
             _to_screen(result.error)
         elif result.value:

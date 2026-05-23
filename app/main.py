@@ -20,19 +20,17 @@ def main():
             continue
 
         parsed_input: ParsedInput = tokenize_user_input(user_input)
-        command = parsed_input.tokens[0] if len(parsed_input.tokens) > 0 else ""
-        args = parsed_input.tokens[1:] if len(parsed_input.tokens) > 1 else []
 
-        if command == "":
+        if parsed_input.command == "":
             continue
 
-        shell.execute(command, *args)
+        shell.execute(parsed_input)
 
         # Handle results
         if shell._ctx.curr_result.interrupt:
             break
         else:
-            shell.output_results(parsed_input)
+            shell.output_results()
 
 
 if __name__ == "__main__":
