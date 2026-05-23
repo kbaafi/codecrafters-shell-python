@@ -2,9 +2,7 @@ import os
 import sys
 from typing import Optional
 from enum import Enum, auto
-from .handlers import Result
-from dataclasses import dataclass, field
-
+from .models import Result, ParsedInput
 
 
 PROMPT = "$ "
@@ -15,15 +13,6 @@ class CURSOR_STATE(Enum):
     OUT_QUOTE = auto()
     ESCAPE = auto()
     IN_QUOTE_ESCAPE = auto()
-
-
-@dataclass
-class ParsedInput:
-    tokens: list[str] = field(default_factory=list)
-    stdout_redirect: str | None = None
-    stderr_redirect: str | None = None
-    stdout_append: bool = False
-    stderr_append: bool = False
 
 
 def tokenize_user_input(input_str: str) -> ParsedInput:
@@ -140,5 +129,3 @@ def output_result(result: Result, parsed_input: ParsedInput):
         _to_screen(result.value)
     elif result.error:
         _to_screen(result.error)
-
-

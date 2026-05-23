@@ -1,6 +1,6 @@
 import os
 import pytest
-from app.handlers import Result
+from app.command_handlers import Result
 from app.common import ParsedInput, output_result
 
 
