@@ -7,6 +7,7 @@ from .shell import Shell
 
 
 def make_completer(shell: Shell):
+    cached_options = []
 
     def build_file_system_completion_options(base_dir, partial_name):
         options = []
@@ -18,12 +19,12 @@ def make_completer(shell: Shell):
         return options
 
     def completer(text: str, state: int):
-        cached_options = []
+        nonlocal cached_options
         if state == 0:
             line = readline.get_line_buffer()
             tokens = line.strip().split()
             if len(tokens) == 0 or (len(tokens) == 1 and not line.endswith(" ")):
-                _options = [
+                cached_options = [
                     f"{cmd} " for cmd in shell.known_commands if cmd.startswith(text)
                 ]
             else:
@@ -31,7 +32,7 @@ def make_completer(shell: Shell):
                 partial = last_token
 
                 if "/" not in partial:
-                    _options = build_file_system_completion_options(
+                    cached_options = build_file_system_completion_options(
                         shell._ctx.cwd, partial
                     )
                 else:
@@ -41,25 +42,21 @@ def make_completer(shell: Shell):
                         if partial.startswith("/")
                         else os.path.join(shell._ctx.cwd, display_dir or "/")
                     )
-
                     try:
-                        _options = build_file_system_completion_options(
+                        cached_options = build_file_system_completion_options(
                             base_dir=resolve_dir, partial_name=partial_file
                         )
                     except OSError:
-                        _options = []
-            cached_options = _options
+                        cached_options = []
 
         if len(cached_options) == 0:
-            sys.stdout.write("\a")
-            sys.stdout.flush()
             return None
-        # if len(options) == 1:
-        #     return options[0] if state == 0 else None
+        # if len(cached_options) == 1:
+        #     return cached_options[0] if state == 0 else None
         if state == 0:
             sys.stdout.write("\a")
             sys.stdout.flush()
-            return None
+            return ""
         if state == 1:
             sys.stdout.write("\n" + "  ".join(cached_options) + "\n")
             sys.stdout.flush()
