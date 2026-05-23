@@ -9,23 +9,18 @@ def main():
     shell = Shell()
 
     def completer(text: str, state):
-        tokens = text.strip().split(" ")
-        print(" tokens ", len(tokens), text)
-        if len(tokens) == 1:
+        line = readline.get_line_buffer()
+        tokens = line.strip().split()
+        if len(tokens) == 0 or (len(tokens) == 1 and not line.endswith(" ")):
             options = [
                 f"{cmd} " for cmd in shell.known_commands if cmd.startswith(text)
             ]
-        elif len(tokens) > 1:
-            args = "".join(tokens[1:])
-            command = tokens[0]
+        else:
+            partial = tokens[-1] if line.endswith(" ") else text
             options = [
-                f"{command} {file} "
+                f"{file} "
                 for file in os.listdir(shell._ctx.cwd)
-                if os.path.isfile(os.path.join(shell._ctx.cwd, file))
-                and os.access(
-                    os.path.join(shell._ctx.cwd, file), os.R_OK | os.W_OK | os.F_OK
-                )
-                and os.path.join(shell._ctx.cwd, file).startswith(args)
+                if file.startswith(partial)
             ]
 
         return options[state] if state < len(options) else None
