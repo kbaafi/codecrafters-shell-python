@@ -16,7 +16,7 @@ def make_completer(shell: Shell):
                 options.append(f"{entry.name}/")
         return options
 
-    def completer(text: str, state):
+    def completer(text: str, state: int):
         line = readline.get_line_buffer()
         tokens = line.strip().split()
         if len(tokens) == 0 or (len(tokens) == 1 and not line.endswith(" ")):
@@ -43,9 +43,15 @@ def make_completer(shell: Shell):
                     )
                 except OSError:
                     options = []
-        result = options[state] if state < len(options) else None
-        if not result:
+        # result = options[state] if state < len(options) else None
+        if not len(options) == 0:
             sys.stdout.write("\x07")
+        elif state == 0:
+            sys.stdout.write("\x07")
+        elif state == 1:
+            result = " ".join(options)
+        else:
+            result = options[0]
         return result
 
     return completer
