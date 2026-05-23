@@ -60,7 +60,9 @@ def make_completer(shell: Shell):
             sys.stdout.flush()
             return ""
         if state == 1:
-            sys.stdout.write("  ".join(cached["options"]) + "\n")
+            prefix = cached["text"] or ""
+            display = [o.removeprefix(prefix) for o in cached["options"]]
+            sys.stdout.write("  ".join(display) + "\n")
             sys.stdout.flush()
             # readline.redisplay()
             return None
