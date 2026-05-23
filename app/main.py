@@ -61,7 +61,7 @@ def make_completer(shell: Shell):
             # sys.stdout.flush()
             # readline.redisplay()
             # sys.stdout.flush()
-            return " ".join(cached_options)
+            return cached_options
             # return None
         return None
 
