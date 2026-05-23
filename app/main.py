@@ -1,6 +1,6 @@
 from enum import Enum
 import sys
-from .common import PROMPT, tokenize_user_input, output_result
+from .common import PROMPT, ParsedInput, tokenize_user_input, output_result
 from .handlers import built_ins, run_executable, CommandType, resolve_command
 import os
 from .shell_context import ShellContext
@@ -15,9 +15,9 @@ def main():
         if len(user_input) == 0 or not user_input:
             continue
 
-        result, stdout_redirect, stderr_redirect = tokenize_user_input(user_input)
-        command = result[0] if len(result) > 0 else ""
-        args = result[1:] if len(result) > 1 else []
+        parsed_input: ParsedInput = tokenize_user_input(user_input)
+        command = parsed_input.tokens[0] if len(parsed_input.tokens) > 0 else ""
+        args = parsed_input.tokens[1:] if len(parsed_input.tokens) > 1 else []
 
         if command == "":
             continue
@@ -37,7 +37,7 @@ def main():
         if result.interrupt:
             break
         else:
-            output_result(result, stdout_redirect, stderr_redirect)
+            output_result(result, parsed_input)
         
         
 

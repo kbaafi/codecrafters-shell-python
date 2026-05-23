@@ -3,6 +3,7 @@ import sys
 from typing import Optional
 from enum import Enum, auto
 from .handlers import Result
+from dataclasses import dataclass, field
 
 
 
@@ -16,11 +17,22 @@ class CURSOR_STATE(Enum):
     IN_QUOTE_ESCAPE = auto()
 
 
-def tokenize_user_input(input_str: str) -> tuple[list[str], str|None, str|None]:
+@dataclass
+class ParsedInput:
+    tokens: list[str] = field(default_factory=list)
+    stdout_redirect: str | None = None
+    stderr_redirect: str | None = None
+    stdout_append: bool = False
+    stderr_append: bool = False
+
+
+def tokenize_user_input(input_str: str) -> ParsedInput:
     tokens = []
     current = []
     stdout_redirect = None
     stderr_redirect = None
+    stderr_append = False
+    stdout_append = False
     state = CURSOR_STATE.OUT_QUOTE
     quote_char = None
 
@@ -54,16 +66,23 @@ def tokenize_user_input(input_str: str) -> tuple[list[str], str|None, str|None]:
                     if current:
                         tokens.append("".join(current))
                         current = []
-                    filename, i = read_word(input_str, i+2)
+                    next_ch = input_str[i+2] if i+2 < len(input_str) else None
+                    append_mode = next_ch == ">"
+                    filename, i = read_word(input_str, i+3) if append_mode else read_word(input_str, i+2)
+            
                     if ch == "1":
                         stdout_redirect = filename
+                        stdout_append = append_mode
                     else:
                         stderr_redirect = filename
+                        stderr_append = append_mode
                 elif ch == ">":
                     if current:
                         tokens.append("".join(current))
                         current = []
-                    stdout_redirect, i = read_word(input_str, i + 1)
+                    next_ch = input_str[i+1] if i+1 < len(input_str) else None
+                    stdout_append = next_ch == ">"
+                    stdout_redirect, i = read_word(input_str, i + 2 if stdout_append else i + 1)
                 else:
                     current.append(ch)
 
@@ -87,26 +106,31 @@ def tokenize_user_input(input_str: str) -> tuple[list[str], str|None, str|None]:
     if current:
         tokens.append("".join(current))
 
-    return tokens, stdout_redirect, stderr_redirect
+    return ParsedInput(
+        tokens=tokens,
+        stdout_redirect=stdout_redirect,
+        stderr_redirect=stderr_redirect,
+        stderr_append=stderr_append,
+        stdout_append=stdout_append
+    )
 
 
-def output_result(result: Result, stdout_redirect: Optional[str], stderr_redirect: Optional[str]):
-    if stderr_redirect is not None:
-        with open(stderr_redirect, 'w') as file:
-            file.write(result.error or "")
-        if result.value:
-            output = result.value if result.value.endswith('\n') else result.value + '\n'
-            sys.stdout.write(output)
-    elif stdout_redirect is not None:
-        with open(stdout_redirect, 'w') as file:
-            file.write(result.value or "")
-        if result.error:
-            output = result.error if result.error.endswith('\n') else result.error + '\n'
-            sys.stdout.write(output)
-    elif result.value:
-        output = result.value if result.value.endswith('\n') else result.value + '\n'
-        sys.stdout.write(output)
-    elif result.error:
-        output = result.error if result.error.endswith('\n') else result.error + '\n'
-        sys.stdout.write(output)
-        
+def _to_screen(text: str | None):
+    if text:
+        sys.stdout.write(text if text.endswith('\n') else text + '\n')
+
+def _to_file(text: str | None, path: str, append: bool):
+    with open(path, 'a' if append else 'w') as f:
+        f.write(text or "")
+
+def output_result(result: Result, parsed_input: ParsedInput):
+    if parsed_input.stderr_redirect is not None:
+        _to_file(result.error, parsed_input.stderr_redirect, parsed_input.stderr_append)
+        _to_screen(result.value)
+    elif parsed_input.stdout_redirect is not None:
+        _to_file(result.value, parsed_input.stdout_redirect, parsed_input.stdout_append)
+        _to_screen(result.error)
+    else:
+        _to_screen(result.value or result.error)
+
+
