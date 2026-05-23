@@ -122,7 +122,7 @@ def _to_screen(text: str | None):
 def _to_file(text: str | None, path: str, append: bool):
     with open(path, 'a' if append else 'w') as f:
         if append:
-            f.write(f'\n{text}' or "")
+            f.write(f'{text}' or "")
             return
         f.write(text or "")
 
