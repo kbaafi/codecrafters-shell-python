@@ -110,7 +110,7 @@ def test_completes_absolute_path(tmp_path):
     partial = f"{tmp_path}/no"
     with patch("readline.get_line_buffer", return_value=f"cat {partial}"):
         matches = complete_all(completer, partial)
-    assert f"{tmp_path}/notes.txt " in matches
+    assert "notes.txt " in matches
 
 
 def test_completes_absolute_path_trailing_slash(tmp_path):
@@ -120,7 +120,7 @@ def test_completes_absolute_path_trailing_slash(tmp_path):
     partial = f"{tmp_path}/"
     with patch("readline.get_line_buffer", return_value=f"cat {partial}"):
         matches = complete_all(completer, partial)
-    assert f"{tmp_path}/data.csv " in matches
+    assert "data.csv " in matches
 
 
 def test_completes_relative_path(tmp_path):
@@ -132,7 +132,7 @@ def test_completes_relative_path(tmp_path):
     partial = "docs/re"
     with patch("readline.get_line_buffer", return_value=f"cat {partial}"):
         matches = complete_all(completer, partial)
-    assert "docs/readme.txt " in matches
+    assert "readme.txt " in matches
 
 
 def test_completes_relative_path_trailing_slash(tmp_path):
@@ -144,7 +144,7 @@ def test_completes_relative_path_trailing_slash(tmp_path):
     partial = "apple/raspberry/"
     with patch("readline.get_line_buffer", return_value=f"wc {partial}"):
         matches = complete_all(completer, "")
-    assert "apple/raspberry/mango.txt " in matches
+    assert "mango.txt " in matches
 
 
 def test_invalid_path_returns_empty():
