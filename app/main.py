@@ -55,11 +55,9 @@ def make_completer(shell: Shell):
         #     return cached_options[0] if state == 0 else None
         if state == 0:
             sys.stdout.write("\a")
-            sys.stdout.flush()
             return ""
         if state == 1:
             sys.stdout.write("\n" + "  ".join(cached_options) + "\n")
-            sys.stdout.flush()
             return None
         return None
 
