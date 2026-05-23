@@ -18,11 +18,18 @@ def make_completer(shell: Shell):
             partial = last_token
 
             if "/" not in partial:
-                options = [
-                    f"{file} "
-                    for file in os.listdir(shell._ctx.cwd)
-                    if file.startswith(partial)
-                ]
+                options = []
+                for entry in os.scandir(shell._ctx.cwd):
+                    if entry.is_file() and entry.name.startswith(partial):
+                        options.append(f"{entry.name} ")
+                    elif entry.is_dir() and entry.name.startswith(partial):
+                        options.append(f"{entry.name}/")
+
+                # options = [
+                #     f"{file} "
+                #     for file in os.listdir(shell._ctx.cwd)
+                #     if file.startswith(partial)
+                # ]
             else:
                 display_dir, partial_file = partial.rsplit("/", 1)
                 resolve_dir = (
