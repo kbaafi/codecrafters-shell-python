@@ -6,6 +6,15 @@ from .shell import Shell
 
 
 def make_completer(shell: Shell):
+    def build_file_system_completion_options(base_dir, partial_name):
+        options = []
+        for entry in os.scandir(base_dir):
+            if entry.is_file() and entry.name.startswith(partial_name):
+                options.append(f"{entry.name} ")
+            elif entry.is_dir() and entry.name.startswith(partial_name):
+                options.append(f"{entry.name}/")
+        return open
+
     def completer(text: str, state):
         line = readline.get_line_buffer()
         tokens = line.strip().split()
@@ -18,12 +27,7 @@ def make_completer(shell: Shell):
             partial = last_token
 
             if "/" not in partial:
-                options = []
-                for entry in os.scandir(shell._ctx.cwd):
-                    if entry.is_file() and entry.name.startswith(partial):
-                        options.append(f"{entry.name} ")
-                    elif entry.is_dir() and entry.name.startswith(partial):
-                        options.append(f"{entry.name}/")
+                build_file_system_completion_options(shell._ctx.cwd, partial)
 
                 # options = [
                 #     f"{file} "
