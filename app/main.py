@@ -50,6 +50,7 @@ def make_completer(shell: Shell):
             sys.stdout.write("\x07")
         elif state == 1:
             result = " ".join(options)
+            print(repr(options), state, result)
         else:
             result = options[0]
         return result
