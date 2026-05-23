@@ -1,9 +1,6 @@
-import os
-import sys
-from typing import Optional
 from enum import Enum, auto
-from .models import Result, ParsedInput
 
+from .models import ParsedInput
 
 PROMPT = "$ "
 
@@ -26,12 +23,12 @@ def tokenize_user_input(input_str: str) -> ParsedInput:
     quote_char = None
 
     def read_word(s: str, i: int) -> tuple[str, int]:
-        while i < len (s) and s[i] == " ":
+        while i < len(s) and s[i] == " ":
             i += 1
         start = i
         while i < len(s) and s[i] != " ":
             i += 1
-        return s[start: i], i-1
+        return s[start:i], i - 1
 
     i = 0
     while i < len(input_str):
@@ -51,14 +48,22 @@ def tokenize_user_input(input_str: str) -> ParsedInput:
                     if current:
                         tokens.append("".join(current))
                         current = []
-                elif ch in ("1", "2") and i +1 < len(input_str) and input_str[i+1] == ">":
+                elif (
+                    ch in ("1", "2")
+                    and i + 1 < len(input_str)
+                    and input_str[i + 1] == ">"
+                ):
                     if current:
                         tokens.append("".join(current))
                         current = []
-                    next_ch = input_str[i+2] if i+2 < len(input_str) else None
+                    next_ch = input_str[i + 2] if i + 2 < len(input_str) else None
                     append_mode = next_ch == ">"
-                    filename, i = read_word(input_str, i+3) if append_mode else read_word(input_str, i+2)
-            
+                    filename, i = (
+                        read_word(input_str, i + 3)
+                        if append_mode
+                        else read_word(input_str, i + 2)
+                    )
+
                     if ch == "1":
                         stdout_redirect = filename
                         stdout_append = append_mode
@@ -69,9 +74,11 @@ def tokenize_user_input(input_str: str) -> ParsedInput:
                     if current:
                         tokens.append("".join(current))
                         current = []
-                    next_ch = input_str[i+1] if i+1 < len(input_str) else None
+                    next_ch = input_str[i + 1] if i + 1 < len(input_str) else None
                     stdout_append = next_ch == ">"
-                    stdout_redirect, i = read_word(input_str, i + 2 if stdout_append else i + 1)
+                    stdout_redirect, i = read_word(
+                        input_str, i + 2 if stdout_append else i + 1
+                    )
                 else:
                     current.append(ch)
 
@@ -100,32 +107,5 @@ def tokenize_user_input(input_str: str) -> ParsedInput:
         stdout_redirect=stdout_redirect,
         stderr_redirect=stderr_redirect,
         stderr_append=stderr_append,
-        stdout_append=stdout_append
+        stdout_append=stdout_append,
     )
-
-
-def _to_screen(text: str | None):
-    if text:
-        sys.stdout.write(text if text.endswith('\n') else text + '\n')
-
-def _to_file(text: str | None, path: str, append: bool):
-    if append and os.path.exists(path) and os.path.getsize(path) > 0:
-        with open(path, 'rb') as f:
-            f.seek(-1, 2)
-            if f.read(1) != b'\n':
-                with open(path, 'a') as f:
-                    f.write('\n')
-    with open(path, 'a' if append else 'w') as f:
-        f.write(text or "")
-
-def output_result(result: Result, parsed_input: ParsedInput):
-    if parsed_input.stderr_redirect is not None:
-        _to_file(result.error, parsed_input.stderr_redirect, parsed_input.stderr_append)
-        _to_screen(result.value)
-    elif parsed_input.stdout_redirect is not None:
-        _to_file(result.value, parsed_input.stdout_redirect, parsed_input.stdout_append)
-        _to_screen(result.error)
-    elif result.value:
-        _to_screen(result.value)
-    elif result.error:
-        _to_screen(result.error)

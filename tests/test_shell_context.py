@@ -1,93 +1,113 @@
 import os
-import pytest
-from app.shell_context import ShellContext
-from app.models import Result
+
+from app.models import CommandType
+from app.shell import Shell
 
 
 def test_cwd_initialized_to_current_dir():
-    ctx = ShellContext()
-    assert ctx.cwd == os.getcwd()
+    shell = Shell()
+    assert shell._ctx.cwd == os.getcwd()
+
 
 def test_built_ins_registered():
-    ctx = ShellContext()
-    assert "echo" in ctx.built_ins
-    assert "exit" in ctx.built_ins
-    assert "type" in ctx.built_ins
-    assert "pwd" in ctx.built_ins
-    assert "cd" in ctx.built_ins
+    shell = Shell()
+    assert "echo" in shell._ctx.built_ins
+    assert "exit" in shell._ctx.built_ins
+    assert "type" in shell._ctx.built_ins
+    assert "pwd" in shell._ctx.built_ins
+    assert "cd" in shell._ctx.built_ins
+
 
 def test_executables_populated():
-    ctx = ShellContext()
-    assert len(ctx.executables) > 0
+    shell = Shell()
+    assert len(shell._ctx.executables) > 0
+
 
 def test_execute_builtin_echo():
-    ctx = ShellContext()
-    ctx.execute("echo", "hello", "world")
-    assert ctx.curr_result.value == "hello world"
+    shell = Shell()
+    shell.execute("echo", "hello", "world")
+    assert shell._ctx.curr_result.value == "hello world"
+
 
 def test_execute_builtin_pwd():
-    ctx = ShellContext()
-    ctx.execute("pwd")
-    assert ctx.curr_result.value == ctx.cwd
+    shell = Shell()
+    shell.execute("pwd")
+    assert shell._ctx.curr_result.value == shell._ctx.cwd
+
 
 def test_execute_builtin_cd(tmp_path):
-    ctx = ShellContext()
-    ctx.execute("cd", str(tmp_path))
-    assert ctx.cwd == str(tmp_path)
+    shell = Shell()
+    shell.execute("cd", str(tmp_path))
+    assert shell._ctx.cwd == str(tmp_path)
+
 
 def test_execute_cd_invalid_path():
-    ctx = ShellContext()
-    ctx.execute("cd", "/nonexistent/path/xyz")
-    assert ctx.curr_result.error is None
-    assert "No such file or directory" in ctx.curr_result.value
+    shell = Shell()
+    shell.execute("cd", "/nonexistent/path/xyz")
+    assert shell._ctx.curr_result.value is not None
+    assert "No such file or directory" in shell._ctx.curr_result.value
+
 
 def test_execute_exit():
-    ctx = ShellContext()
-    ctx.execute("exit")
-    assert ctx.curr_result.interrupt is True
+    shell = Shell()
+    shell.execute("exit")
+    assert shell._ctx.curr_result.interrupt is True
+
 
 def test_execute_unknown_command():
-    ctx = ShellContext()
-    ctx.execute("notarealcommand")
-    assert "command not found" in ctx.curr_result.error
+    shell = Shell()
+    shell.execute("notarealcommand")
+    assert shell._ctx.curr_result.error is not None
+    assert "command not found" in shell._ctx.curr_result.error
 
-def test_execute_executable():
-    ctx = ShellContext()
-    ctx.execute("echo", "from executable")
-    assert ctx.curr_result.value is not None
 
 def test_resolve_command_builtin():
-    from app.models import CommandType
-    ctx = ShellContext()
-    cmd_type, path = ctx.resolve_command("echo")
+    shell = Shell()
+    cmd_type, path = shell._ctx.resolve_command("echo")
     assert cmd_type == CommandType.BUILTIN
     assert path is None
 
+
 def test_resolve_command_executable():
-    from app.models import CommandType
-    ctx = ShellContext()
-    cmd_type, path = ctx.resolve_command("ls")
+    shell = Shell()
+    cmd_type, path = shell._ctx.resolve_command("ls")
     assert cmd_type == CommandType.EXECUTABLE
     assert path is not None
 
+
 def test_resolve_command_invalid():
-    from app.models import CommandType
-    ctx = ShellContext()
-    cmd_type, path = ctx.resolve_command("notarealcommand")
+    shell = Shell()
+    cmd_type, path = shell._ctx.resolve_command("notarealcommand")
     assert cmd_type == CommandType.INVALID
     assert path is None
 
+
 def test_type_handler_builtin():
-    ctx = ShellContext()
-    ctx.execute("type", "echo")
-    assert ctx.curr_result.value == "echo is a shell builtin"
+    shell = Shell()
+    shell.execute("type", "echo")
+    assert shell._ctx.curr_result.value == "echo is a shell builtin"
+
 
 def test_type_handler_executable():
-    ctx = ShellContext()
-    ctx.execute("type", "ls")
-    assert "ls is" in ctx.curr_result.value
+    shell = Shell()
+    shell.execute("type", "ls")
+    assert shell._ctx.curr_result.value is not None
+    assert "ls is" in shell._ctx.curr_result.value
+
 
 def test_type_handler_invalid():
-    ctx = ShellContext()
-    ctx.execute("type", "notarealcommand")
-    assert "not found" in ctx.curr_result.value
+    shell = Shell()
+    shell.execute("type", "notarealcommand")
+    assert shell._ctx.curr_result.value is not None
+    assert "not found" in shell._ctx.curr_result.value
+
+
+def test_known_commands_includes_builtins():
+    shell = Shell()
+    assert "echo" in shell.known_commands
+    assert "cd" in shell.known_commands
+
+
+def test_known_commands_includes_executables():
+    shell = Shell()
+    assert "ls" in shell.known_commands

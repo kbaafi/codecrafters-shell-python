@@ -1,30 +1,21 @@
-from enum import Enum
-import sys
-from .common import PROMPT, ParsedInput, tokenize_user_input, output_result
-from .command_handlers import run_executable, CommandType
-from .shell_context import ShellContext
 import readline
 
-
-
-
-
-
+from .common import PROMPT, ParsedInput, tokenize_user_input
+from .shell import Shell
 
 
 def main():
-    shell_context = ShellContext()
+    shell = Shell()
 
     def completer(text, state):
-        known_cmds = list(shell_context.built_ins) + list(shell_context.executables)
-        options = [f'{cmd} ' for cmd in known_cmds if cmd.startswith(text)]
+        options = [f"{cmd} " for cmd in shell.known_commands if cmd.startswith(text)]
         return options[state] if state < len(options) else None
-    
+
     readline.set_completer(completer)
     readline.parse_and_bind("tab: complete")
 
     while True:
-        user_input = input(f'{PROMPT}')
+        user_input = input(f"{PROMPT}")
         if len(user_input) == 0 or not user_input:
             continue
 
@@ -35,25 +26,14 @@ def main():
         if command == "":
             continue
 
-        # command_type, _ = resolve_command(command)
-
-        # match command_type:
-        #     case CommandType.BUILTIN:
-        #         result = built_ins[command](shell_context, *args)
-        #     case CommandType.EXECUTABLE:
-        #         result = run_executable(command, *args)
-        #     case _:
-        #         sys.stdout.write(f"{command}: command not found\n")
-        #         continue
-        shell_context.execute(command, *args)
+        shell.execute(command, *args)
 
         # Handle results
-        if shell_context.curr_result.interrupt:
+        if shell._ctx.curr_result.interrupt:
             break
         else:
-            output_result(shell_context.curr_result, parsed_input)
-        
-        
+            shell.output_results(parsed_input)
+
 
 if __name__ == "__main__":
     main()

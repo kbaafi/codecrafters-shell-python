@@ -1,16 +1,19 @@
 from __future__ import annotations
-import subprocess
+
 import os
-from typing import Union
-from .models import Result, CommandType
+import subprocess
+
+from .models import CommandType, Result, ShellContext
 
 
 def exit_handler(ctx: ShellContext, *args):
     _ = args
+    _ = ctx
     return Result(interrupt=True)
 
 
 def echo_handler(ctx: ShellContext, *args):
+    _ = ctx
     return Result(value=" ".join(args))
 
 
@@ -23,7 +26,7 @@ def cd_handler(ctx: ShellContext, *args):
         base_path = os.path.expanduser(path[0])
         try:
             resolved = base_path + path[1:]
-        except:
+        except Exception:
             resolved = base_path
     else:
         resolved = os.path.normpath(os.path.join(ctx.cwd, path))
@@ -35,7 +38,6 @@ def cd_handler(ctx: ShellContext, *args):
 
 
 def type_handler(ctx: ShellContext, *args):
-    _ = ctx
     command = args[0]
     command_type, path = ctx.resolve_command(command=command)
 
@@ -46,7 +48,7 @@ def type_handler(ctx: ShellContext, *args):
             return Result(value=f"{command} is {path}")
         case CommandType.INVALID:
             return Result(value=f"{command}: not found")
-    
+
 
 def pwd_handler(ctx: ShellContext, *args):
     return Result(value=ctx.cwd)
