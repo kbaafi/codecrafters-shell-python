@@ -2,9 +2,17 @@ from enum import Enum
 import sys
 from .common import PROMPT, ParsedInput, tokenize_user_input, output_result
 from .handlers import built_ins, run_executable, CommandType, resolve_command
-import os
 from .shell_context import ShellContext
-import shlex
+import readline
+
+
+def completer(text, state):
+    options = [cmd for cmd in built_ins if cmd.startswith(text)]
+    return options[state] if state < len(options) else None
+
+
+readline.set_completer(completer)
+readline.parse_and_bind("tab: complete")
 
 
 def main():

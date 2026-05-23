@@ -64,14 +64,38 @@ def test_stderr_redirect_prints_value_to_screen(capsys, tmp_path):
     assert err.read_text() == "err"
     assert capsys.readouterr().out == "out\n"
 
-def test_stdout_append(tmp_path):
+def test_stdout_append_with_trailing_newline(tmp_path):
     out = tmp_path / "out.txt"
     out.write_text("existing\n")
     run(Result(value="new"), stdout_redirect=str(out), stdout_append=True)
     assert out.read_text() == "existing\nnew"
 
-def test_stderr_append(tmp_path):
+def test_stdout_append_without_trailing_newline(tmp_path):
+    out = tmp_path / "out.txt"
+    out.write_text("existing")
+    run(Result(value="new"), stdout_redirect=str(out), stdout_append=True)
+    assert out.read_text() == "existing\nnew"
+
+def test_stdout_append_to_empty_file(tmp_path):
+    out = tmp_path / "out.txt"
+    out.write_text("")
+    run(Result(value="new"), stdout_redirect=str(out), stdout_append=True)
+    assert out.read_text() == "new"
+
+def test_stderr_append_with_trailing_newline(tmp_path):
     err = tmp_path / "err.txt"
     err.write_text("existing\n")
     run(Result(error="new"), stderr_redirect=str(err), stderr_append=True)
     assert err.read_text() == "existing\nnew"
+
+def test_stderr_append_without_trailing_newline(tmp_path):
+    err = tmp_path / "err.txt"
+    err.write_text("existing")
+    run(Result(error="new"), stderr_redirect=str(err), stderr_append=True)
+    assert err.read_text() == "existing\nnew"
+
+def test_stderr_append_to_empty_file(tmp_path):
+    err = tmp_path / "err.txt"
+    err.write_text("")
+    run(Result(error="new"), stderr_redirect=str(err), stderr_append=True)
+    assert err.read_text() == "new"
