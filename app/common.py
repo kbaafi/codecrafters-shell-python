@@ -120,10 +120,13 @@ def _to_screen(text: str | None):
         sys.stdout.write(text if text.endswith('\n') else text + '\n')
 
 def _to_file(text: str | None, path: str, append: bool):
+    if append and os.path.exists(path) and os.path.getsize(path) > 0:
+        with open(path, 'rb') as f:
+            f.seek(-1, 2)
+            if f.read(1) != b'\n':
+                with open(path, 'a') as f:
+                    f.write('\n')
     with open(path, 'a' if append else 'w') as f:
-        if append:
-            f.write(f'{text}' or "")
-            return
         f.write(text or "")
 
 def output_result(result: Result, parsed_input: ParsedInput):
