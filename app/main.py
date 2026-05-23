@@ -37,7 +37,7 @@ def main():
         if result.interrupt:
             break
         else:
-            output_result(result, stdout_redirect, stdout_redirect)
+            output_result(result, stdout_redirect, stderr_redirect)
         
         
 
