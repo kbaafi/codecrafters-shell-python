@@ -9,8 +9,8 @@ def main():
     shell = Shell()
 
     def completer(text: str, state):
-        tokens = text.strip().split("0")
-        print(len(tokens))
+        tokens = text.strip().split(" ")
+
         if len(tokens) == 1:
             options = [
                 f"{cmd} " for cmd in shell.known_commands if cmd.startswith(text)
