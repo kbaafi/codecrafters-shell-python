@@ -1,6 +1,9 @@
 import os
-from typing import Union
+import sys
+from typing import Union, Optional
 from enum import Enum, auto
+from handlers import Result
+
 
 
 PROMPT = "$ "
@@ -22,62 +25,6 @@ def is_executable_command(command) -> tuple[bool, Union[str, None]]:
         if os.path.isfile(full_path) and os.access(full_path, os.X_OK):
             return True, full_path
     return False, None
-
-
-# def tokenize_user_input(input_str: str) -> tuple[list[str], str|None]:
-#     tokens = []
-#     current = []
-#     redirect_file = None
-#     state = CURSOR_STATE.OUT_QUOTE
-#     quote_char = None
-
-#     input_str = input_str.replace("1>", ">", 1)
-
-#     for i,ch in enumerate(input_str):
-#         match state:
-#             case CURSOR_STATE.OUT_QUOTE:
-#                 if ch in ("'", '"') and quote_char is None:
-#                     quote_char = ch
-#                     state = CURSOR_STATE.IN_QUOTE
-#                 elif ch == "\\":
-#                     state = CURSOR_STATE.ESCAPE
-#                     quote_char = None
-#                 elif ch in ("'", '"') and quote_char in ("'", '"'):
-#                     quote_char = None
-#                     state = CURSOR_STATE.OUT_QUOTE
-#                 elif ch == " ":
-#                     if current:
-#                         tokens.append("".join(current))
-#                         current = []
-#                 elif ch == ">":
-#                     if current:
-#                         tokens.append("".join(current))
-#                         current = []
-#                     redirect_file = input_str[i+1:].strip()
-#                     break
-#                 else:
-#                     current.append(ch)
-
-#             case CURSOR_STATE.IN_QUOTE:
-#                 if ch == quote_char:
-#                     quote_char = None
-#                     state = CURSOR_STATE.OUT_QUOTE
-#                 elif quote_char == '"' and ch == "\\":
-#                     state = CURSOR_STATE.IN_QUOTE_ESCAPE
-#                 else:
-#                     current.append(ch)
-
-#             case CURSOR_STATE.ESCAPE:
-#                 current.append(ch)
-#                 state = CURSOR_STATE.OUT_QUOTE
-
-#             case CURSOR_STATE.IN_QUOTE_ESCAPE:
-#                 current.append(ch)
-#                 state = CURSOR_STATE.IN_QUOTE
-#     if current:
-#         tokens.append("".join(current))
-
-#     return tokens, redirect_file
 
 
 def tokenize_user_input(input_str: str) -> tuple[list[str], str|None, str|None]:
@@ -152,3 +99,22 @@ def tokenize_user_input(input_str: str) -> tuple[list[str], str|None, str|None]:
         tokens.append("".join(current))
 
     return tokens, stdout_redirect, stderr_redirect
+
+
+def output_result(result: Result, stdout_redirect: Optional[str], stderr_redirect: Optional[str]):
+    if stderr_redirect is not None:
+        with open(stderr_redirect, 'w') as file:
+            file.write(result.error or "")
+        if result.value:
+            output = result.value if result.value.endswith('\n') else result.value + '\n'
+            sys.stdout.write(output)
+    elif stdout_redirect is not None:
+        with open(stdout_redirect, 'w') as file:
+            file.write(result.value or "")
+        if result.error:
+            output = result.error if result.error.endswith('\n') else result.error + '\n'
+            sys.stdout.write(output)
+    elif result.value:
+        output = result.value if result.value.endswith('\n') else result.value + '\n'
+        sys.stdout.write(output)
+        

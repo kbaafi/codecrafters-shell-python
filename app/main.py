@@ -1,6 +1,6 @@
 from enum import Enum
 import sys
-from .common import PROMPT, tokenize_user_input
+from .common import PROMPT, tokenize_user_input, output_result
 from .handlers import built_ins, run_executable, CommandType, resolve_command
 import os
 from .shell_context import ShellContext
@@ -36,21 +36,8 @@ def main():
         # Handle results
         if result.interrupt:
             break
-        if stderr_redirect is not None:
-            with open(stderr_redirect, 'w') as file:
-                file.write(result.error or "")
-            if result.value:
-                output = result.value if result.value.endswith('\n') else result.value + '\n'
-                sys.stdout.write(output)
-        elif stdout_redirect is not None:
-            with open(stdout_redirect, 'w') as file:
-                file.write(result.value or "")
-            if result.error:
-                output = result.error if result.error.endswith('\n') else result.error + '\n'
-                sys.stdout.write(output)
-        # elif (stdout_redirect is None or stderr_redirect is None) and result.value:
-        #     output = result.value if result.value.endswith('\n') else result.value + '\n'
-        #     sys.stdout.write(output)
+        else:
+            output_result(result, stdout_redirect, stdout_redirect)
         
         
 
