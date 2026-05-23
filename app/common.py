@@ -106,4 +106,7 @@ def output_result(result: Result, stdout_redirect: Optional[str], stderr_redirec
     elif result.value:
         output = result.value if result.value.endswith('\n') else result.value + '\n'
         sys.stdout.write(output)
+    elif result.error:
+        output = result.error if result.error.endswith('\n') else result.error + '\n'
+        sys.stdout.write(output)
         
