@@ -10,13 +10,13 @@ def make_completer(shell: Shell):
     cached_options = []
 
     def build_file_system_completion_options(base_dir, partial_name):
-        options = []
+        options: list[str] = []
         for entry in os.scandir(base_dir):
             if entry.is_file() and entry.name.startswith(partial_name):
                 options.append(f"{entry.name} ")
             elif entry.is_dir() and entry.name.startswith(partial_name):
                 options.append(f"{entry.name}/")
-        return options
+        return sorted(options)
 
     def completer(text: str, state: int):
         nonlocal cached_options
@@ -61,7 +61,7 @@ def make_completer(shell: Shell):
             # sys.stdout.flush()
             # readline.redisplay()
             sys.stdout.flush()
-            return " ".join(sorted(cached_options))
+            return " ".join(cached_options)
             # return None
         return None
 
