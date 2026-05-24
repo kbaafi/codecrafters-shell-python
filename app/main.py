@@ -8,7 +8,7 @@ from .shell import Shell
 
 
 def make_completer(shell: Shell):
-    cache = {"options": [], "text": None}
+    cache = {"options": [], "text": None, "tab_count": 0}
     tab_count = {"n": 0, "last_text": None}
 
     def build_file_system_completion_options(base_dir, partial_name, text):
@@ -33,9 +33,11 @@ def make_completer(shell: Shell):
             ]
             cache["text"] = text
         else:
-            last_token = tokens[-1] if not line.endswith(" ") else ""
-            partial = last_token
+            partial = tokens[-1]
+            line_stub = tokens[:-1]
+            line_stub_str = " ".join(line_stub)
             print("tokens", tokens)
+            print("stub", line_stub_str)
             # print("partial", partial)
             # print("text", " ".join(tokens[:-2]))
 
