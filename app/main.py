@@ -9,7 +9,7 @@ from .shell import Shell
 def make_completer(shell: Shell):
     cached = {"options": [], "text": None}
 
-    def build_file_system_completion_options(base_dir, partial_name):
+    def build_file_system_completion_options(base_dir, partial_name, text):
         options: list[str] = []
         for entry in os.scandir(base_dir):
             if entry.is_file() and entry.name.startswith(partial_name):
@@ -17,7 +17,7 @@ def make_completer(shell: Shell):
             elif entry.is_dir() and entry.name.startswith(partial_name):
                 options.append(f"{entry.name}/")
         options = sorted(options)
-        return {"options": options, "text": " ".join(options)}
+        return {"options": options, "text": text}
 
     def completer(text: str, state: int):
         nonlocal cached
@@ -35,7 +35,7 @@ def make_completer(shell: Shell):
 
                 if "/" not in partial:
                     cached = build_file_system_completion_options(
-                        shell._ctx.cwd, partial
+                        shell._ctx.cwd, partial, text
                     )
                 else:
                     display_dir, partial_file = partial.rsplit("/", 1)
@@ -46,7 +46,7 @@ def make_completer(shell: Shell):
                     )
                     try:
                         cached = build_file_system_completion_options(
-                            base_dir=resolve_dir, partial_name=partial_file
+                            resolve_dir, partial_file, text
                         )
                     except OSError:
                         cached = {"options": [], "text": ""}
@@ -60,8 +60,8 @@ def make_completer(shell: Shell):
             sys.stdout.flush()
             return ""
         if state == 1:
-            # prefix = cached["text"] or ""
-            display = [o for o in cached["options"]]
+            prefix = cached["text"] or ""
+            display = [o.removeprefix(prefix) for o in cached["options"]]
             sys.stdout.write(" ".join(display))
             sys.stdout.flush()
             readline.redisplay()
