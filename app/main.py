@@ -24,7 +24,6 @@ def make_completer(shell: Shell):
         nonlocal cached
         nonlocal tab_count
 
-        # if state == 0:
         line = readline.get_line_buffer()
         tokens = line.strip().split()
         if len(tokens) == 0 or (len(tokens) == 1 and not line.endswith(" ")):
@@ -72,7 +71,7 @@ def make_completer(shell: Shell):
                 sys.stdout.write("\n" + "  ".join(cached["options"]) + "\n")
                 sys.stdout.flush()
                 readline.redisplay()
-                return cached["text"]
+                return tab_count["last_text"]
         return None
 
     return completer
