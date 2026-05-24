@@ -1,13 +1,14 @@
 import os
 import readline
-import sys
 
 from .common import PROMPT, ParsedInput, tokenize_user_input
 from .shell import Shell
 
+# import sys
+
 
 def make_completer(shell: Shell):
-    cached = {"options": [], "text": None}
+    cache = {"options": [], "text": None}
     tab_count = {"n": 0, "last_text": None}
 
     def build_file_system_completion_options(base_dir, partial_name, text):
@@ -21,16 +22,16 @@ def make_completer(shell: Shell):
         return {"options": options, "text": text}
 
     def completer(text: str, state: int):
-        nonlocal cached
+        nonlocal cache
         nonlocal tab_count
 
         line = readline.get_line_buffer()
         tokens = line.strip().split()
         if len(tokens) == 0 or (len(tokens) == 1 and not line.endswith(" ")):
-            cached["options"] = [
+            cache["options"] = [
                 f"{cmd} " for cmd in shell.known_commands if cmd.startswith(text)
             ]
-            cached["text"] = text
+            cache["text"] = text
         else:
             last_token = tokens[-1] if not line.endswith(" ") else ""
             partial = last_token
@@ -38,7 +39,7 @@ def make_completer(shell: Shell):
             print("text", " ".join(tokens[:-2]))
 
             if "/" not in partial:
-                cached = build_file_system_completion_options(
+                cache = build_file_system_completion_options(
                     shell._ctx.cwd, partial, text
                 )
             else:
@@ -49,35 +50,35 @@ def make_completer(shell: Shell):
                     else os.path.join(shell._ctx.cwd, display_dir or "/")
                 )
                 try:
-                    cached = build_file_system_completion_options(
+                    cache = build_file_system_completion_options(
                         resolve_dir, partial_file, text
                     )
                 except OSError:
-                    cached = {"options": [], "text": ""}
+                    cache = {"options": [], "text": ""}
+        return cache["options"][0] if len(cache["options"]) > 0 else None
 
-        if len(cached["options"]) == 0:
-            return None
-        if len(cached["options"]) == 1:
-            return cached["options"][0] if state == 0 else None
-        if state == 0:
-            if tab_count["last_text"] == text:
-                tab_count["n"] += 1
-            else:
-                tab_count["n"] = 1
-                tab_count["last_text"] = text
-            if tab_count["n"] == 1:
-                sys.stdout.write("\a")
-                sys.stdout.flush()
-                return None
-            else:
-                sys.stdout.write("\n" + "  ".join(sorted(cached["options"])) + "\n")
-                sys.stdout.write("\n" + tab_count["last_text"] + "\n")
-                sys.stdout.flush()
-                readline.redisplay()
-                # return tab_count["last_text"]
-                # return "  ".join(cached["options"])
-                return text
-        return None
+        # if len(cached["options"]) == 0:
+        #     return None
+        # if len(cached["options"]) == 1:
+        #     return cached["options"][0] if state == 0 else None
+        # if state == 0:
+        #     if tab_count["last_text"] == text:
+        #         tab_count["n"] += 1
+        #     else:
+        #         tab_count["n"] = 1
+        #         tab_count["last_text"] = text
+        #     if tab_count["n"] == 1:
+        #         sys.stdout.write("\a")
+        #         sys.stdout.flush()
+        #         return None
+        #     else:
+        #         sys.stdout.write("\n" + "  ".join(sorted(cached["options"])) + "\n")
+        #         sys.stdout.write("\n" + tab_count["last_text"] + "\n")
+        #         sys.stdout.flush()
+        #         readline.redisplay()
+        #         # return tab_count["last_text"]
+        #         # return "  ".join(cached["options"])
+        #         return text
 
     return completer
 
