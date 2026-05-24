@@ -65,7 +65,7 @@ def make_completer(shell: Shell):
             # sys.stdout.write("  ".join(display) + "\n")
             sys.stdout.flush()
             readline.redisplay()
-            return "  ".join(display)
+            return " ".join(display)
         return None
 
     return completer
