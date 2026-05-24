@@ -1,10 +1,9 @@
 import os
 import readline
+import sys
 
 from .common import PROMPT, ParsedInput, tokenize_user_input
 from .shell import Shell
-
-# import sys
 
 
 def make_completer(shell: Shell):
@@ -61,7 +60,19 @@ def make_completer(shell: Shell):
                     cache = {"options": [], "text": ""}
         # print(cache["options"])
         # print(cache["text"])
-        return cache["options"][0] if len(cache["options"]) > 0 else None
+        # return cache["options"][0] if len(cache["options"]) > 0 else None
+
+        if len(cache["options"]) == 0:
+            return None
+        elif len(cache["options"]) == 1:
+            return cache["options"][0]
+        else:
+            if state == 0:
+                cache["tab_count"] += 1
+                if cache["tab_count"] == 1:
+                    sys.stdout.write("\a")
+                    sys.stdout.flush()
+                    return None
 
         # if len(cached["options"]) == 0:
         #     return None
