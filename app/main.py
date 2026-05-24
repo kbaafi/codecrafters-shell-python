@@ -67,9 +67,10 @@ def make_completer(shell: Shell):
         elif len(cache["options"]) == 1:
             return cache["options"][0]
         if state == 0:
-            print(text)
+
             cache["tab_count"] += 1
             if cache["tab_count"] == 1:
+                print(text)
                 sys.stdout.write("\a")
                 sys.stdout.flush()
                 return None
