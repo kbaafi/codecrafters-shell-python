@@ -64,7 +64,7 @@ def make_completer(shell: Shell):
             display = [o.removeprefix(prefix) for o in cached["options"]]
             # sys.stdout.write("  ".join(display) + "\n")
             sys.stdout.flush()
-            # readline.redisplay()
+            readline.redisplay()
             return "  ".join(display) + "\n"
         return None
 
