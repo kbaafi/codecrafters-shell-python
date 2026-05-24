@@ -69,6 +69,7 @@ def make_completer(shell: Shell):
                 return None
             else:
                 sys.stdout.write("\n" + "  ".join(sorted(cached["options"])) + "\n")
+                sys.stdout.write("\n" + text + "\n")
                 sys.stdout.flush()
                 readline.redisplay()
                 # return tab_count["last_text"]
