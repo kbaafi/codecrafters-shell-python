@@ -8,6 +8,7 @@ from .shell import Shell
 
 def make_completer(shell: Shell):
     cached = {"options": [], "text": None}
+    tab_count = {"n": 0, "last_text": None}
 
     def build_file_system_completion_options(base_dir, partial_name, text):
         options: list[str] = []
@@ -21,6 +22,8 @@ def make_completer(shell: Shell):
 
     def completer(text: str, state: int):
         nonlocal cached
+        nonlocal tab_count
+
         if state == 0:
             line = readline.get_line_buffer()
             tokens = line.strip().split()
@@ -56,15 +59,20 @@ def make_completer(shell: Shell):
         if len(cached["options"]) == 1:
             return cached["options"][0] if state == 0 else None
         if state == 0:
-            sys.stdout.write("\a")
-            sys.stdout.flush()
-            return text
-        if state == 1:
-            # prefix = cached["text"] or ""
-            display = [o for o in cached["options"]]
-            # sys.stdout.write(" ".join(display))
-            sys.stdout.flush()
-            return " ".join(display)
+            if tab_count["last_text"] == text:
+                tab_count["n"] += 1
+            else:
+                tab_count["n"] = 1
+                tab_count["last_text"] = text
+            if tab_count["n"] == 1:
+                sys.stdout.write("\a")
+                sys.stdout.flush()
+                return None
+            else:
+                sys.stdout.write("\n" + "  ".join(cached["options"]) + "\n")
+                sys.stdout.flush()
+                readline.redisplay()
+                return None
         return None
 
     return completer
