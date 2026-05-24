@@ -59,7 +59,7 @@ def make_completer(shell: Shell):
                     )
                 except OSError:
                     cache = {"options": [], "text": ""}
-        print(len(cache["options"]))
+        print(cache["options"])
         return cache["options"][0] if len(cache["options"]) > 0 else None
 
         # if len(cached["options"]) == 0:
