@@ -72,7 +72,7 @@ def make_completer(shell: Shell):
                 sys.stdout.write("\n" + "  ".join(cached["options"]) + "\n")
                 sys.stdout.flush()
                 readline.redisplay()
-                return text
+                return cached["text"]
         return None
 
     return completer
