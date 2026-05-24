@@ -70,7 +70,7 @@ def make_completer(shell: Shell):
 
             cache["tab_count"] += 1
             if cache["tab_count"] == 1:
-                print(text)
+                print("text", text)
                 sys.stdout.write("\a")
                 sys.stdout.flush()
                 return None
