@@ -36,7 +36,8 @@ def make_completer(shell: Shell):
             partial = tokens[-1]
             line_stub = tokens[:-1]
             line_stub_str = " ".join(line_stub)
-            print("tokens", tokens)
+            print(text)
+            # print("tokens", tokens)
             print("stub", line_stub_str)
             # print("partial", partial)
             # print("text", " ".join(tokens[:-2]))
