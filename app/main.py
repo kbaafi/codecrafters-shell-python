@@ -35,8 +35,8 @@ def make_completer(shell: Shell):
         else:
             last_token = tokens[-1] if not line.endswith(" ") else ""
             partial = last_token
-            print("partial", partial)
-            print("text", " ".join(tokens[:-2]))
+            # print("partial", partial)
+            # print("text", " ".join(tokens[:-2]))
 
             if "/" not in partial:
                 cache = build_file_system_completion_options(
