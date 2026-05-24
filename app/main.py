@@ -69,10 +69,10 @@ def make_completer(shell: Shell):
                 sys.stdout.flush()
                 return None
             else:
-                sys.stdout.write("\n" + "  ".join(cached["options"]) + "\n")
+                # sys.stdout.write("\n" + "  ".join(cached["options"]) + "\n")
                 sys.stdout.flush()
                 readline.redisplay()
-                return None
+                return "  ".join(cached["options"])
         return None
 
     return completer
