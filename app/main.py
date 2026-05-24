@@ -35,6 +35,7 @@ def make_completer(shell: Shell):
         else:
             last_token = tokens[-1] if not line.endswith(" ") else ""
             partial = last_token
+            print("tokens", tokens)
             # print("partial", partial)
             # print("text", " ".join(tokens[:-2]))
 
