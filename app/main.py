@@ -71,7 +71,8 @@ def make_completer(shell: Shell):
                 sys.stdout.write("\n" + "  ".join(cached["options"]) + "\n")
                 sys.stdout.flush()
                 readline.redisplay()
-                return tab_count["last_text"]
+                # return tab_count["last_text"]
+                return "  ".join(cached["options"])
         return None
 
     return completer
