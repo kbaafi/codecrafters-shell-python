@@ -34,17 +34,17 @@ def make_completer(shell: Shell):
             cache["text"] = text
         else:
             partial = tokens[-1]
-            line_stub = tokens[:-1]
-            line_stub_str = " ".join(line_stub)
-            print(line)
+            # line_stub = tokens[:-1]
+            # line_stub_str = " ".join(line_stub)
+            # print(line)
             # print("tokens", tokens)
-            print("stub", line_stub_str)
+            # print("stub", line_stub_str)
             # print("partial", partial)
             # print("text", " ".join(tokens[:-2]))
 
             if "/" not in partial:
                 cache = build_file_system_completion_options(
-                    shell._ctx.cwd, partial, text
+                    shell._ctx.cwd, partial, line
                 )
             else:
                 display_dir, partial_file = partial.rsplit("/", 1)
@@ -55,7 +55,7 @@ def make_completer(shell: Shell):
                 )
                 try:
                     cache = build_file_system_completion_options(
-                        resolve_dir, partial_file, text
+                        resolve_dir, partial_file, line
                     )
                 except OSError:
                     cache = {"options": [], "text": ""}
