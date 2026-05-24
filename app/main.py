@@ -24,35 +24,35 @@ def make_completer(shell: Shell):
         nonlocal cached
         nonlocal tab_count
 
-        if state == 0:
-            line = readline.get_line_buffer()
-            tokens = line.strip().split()
-            if len(tokens) == 0 or (len(tokens) == 1 and not line.endswith(" ")):
-                cached["options"] = [
-                    f"{cmd} " for cmd in shell.known_commands if cmd.startswith(text)
-                ]
-                cached["text"] = text
-            else:
-                last_token = tokens[-1] if not line.endswith(" ") else ""
-                partial = last_token
+        # if state == 0:
+        line = readline.get_line_buffer()
+        tokens = line.strip().split()
+        if len(tokens) == 0 or (len(tokens) == 1 and not line.endswith(" ")):
+            cached["options"] = [
+                f"{cmd} " for cmd in shell.known_commands if cmd.startswith(text)
+            ]
+            cached["text"] = text
+        else:
+            last_token = tokens[-1] if not line.endswith(" ") else ""
+            partial = last_token
 
-                if "/" not in partial:
+            if "/" not in partial:
+                cached = build_file_system_completion_options(
+                    shell._ctx.cwd, partial, text
+                )
+            else:
+                display_dir, partial_file = partial.rsplit("/", 1)
+                resolve_dir = (
+                    display_dir
+                    if partial.startswith("/")
+                    else os.path.join(shell._ctx.cwd, display_dir or "/")
+                )
+                try:
                     cached = build_file_system_completion_options(
-                        shell._ctx.cwd, partial, text
+                        resolve_dir, partial_file, text
                     )
-                else:
-                    display_dir, partial_file = partial.rsplit("/", 1)
-                    resolve_dir = (
-                        display_dir
-                        if partial.startswith("/")
-                        else os.path.join(shell._ctx.cwd, display_dir or "/")
-                    )
-                    try:
-                        cached = build_file_system_completion_options(
-                            resolve_dir, partial_file, text
-                        )
-                    except OSError:
-                        cached = {"options": [], "text": ""}
+                except OSError:
+                    cached = {"options": [], "text": ""}
 
         if len(cached["options"]) == 0:
             return None
