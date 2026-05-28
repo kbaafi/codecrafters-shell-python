@@ -67,7 +67,6 @@ def make_completer(shell: Shell):
                     return None
                 elif len(options) > 0 and cache["tab_count"] > 0:
                     cache["tab_count"] += 1
-                    sys.stdout.write("")
                     sys.stdout.flush()
                     return f"\n {" ".join(options)}\n{line}"
 
