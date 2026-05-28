@@ -55,19 +55,19 @@ def make_completer(shell: Shell):
             cache["options"] = options
             cache["tab_count"] += 1
 
-        if len(cache["options"]) == 0:
-            return None
-        if len(cache["options"]) == 1:
-            return cache["options"][0]
-        if cache["tab_count"] == 1:
-            sys.stdout.write("\a")
-            sys.stdout.flush()
-            return None
-        if cache["tab_count"] > 1:
-            # sys.stdout.write("  ".join(cache["options"]) + "\n")
-            # sys.stdout.flush()
-            # readline.redisplay()
-            return "  ".join(cache["options"]) + "\n"
+            if len(cache["options"]) == 0:
+                return None
+            if len(cache["options"]) == 1:
+                return cache["options"][0]
+            if cache["tab_count"] == 1:
+                sys.stdout.write("\a")
+                sys.stdout.flush()
+                return None
+            if cache["tab_count"] > 1:
+                # sys.stdout.write("  ".join(cache["options"]) + "\n")
+                # sys.stdout.flush()
+                # readline.redisplay()
+                return "  ".join(cache["options"]) + "\n"
 
     return completer
 
