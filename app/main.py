@@ -7,7 +7,7 @@ from .shell import Shell
 
 
 def make_completer(shell: Shell):
-    cache = {"options": [], "text": None, "tab_count": 0}
+    cache = {"options": [], "text": None, "tab_count": 0, "base_dir": None}
 
     def build_file_system_completion_options(base_dir, partial_name, text):
         options: list[str] = []
@@ -17,7 +17,7 @@ def make_completer(shell: Shell):
             elif entry.is_dir() and entry.name.startswith(partial_name):
                 options.append(f"{entry.name}/")
         options = sorted(options)
-        return {"options": options, "text": text}
+        return {"options": options, "text": text, "base_dir": base_dir}
 
     def completer(text: str, state: int):
         nonlocal cache
@@ -37,9 +37,6 @@ def make_completer(shell: Shell):
                     )["options"]
                 else:
                     display_dir, partial_file = partial.rsplit("/", 1)
-                    sys.stdout.write(
-                        f"Display dir: {display_dir}, partial file: {partial_file}\n"
-                    )
                     resolve_dir = (
                         display_dir
                         if partial.startswith("/")
@@ -67,8 +64,8 @@ def make_completer(shell: Shell):
                 sys.stdout.flush()
                 return None
             if cache["tab_count"] > 1:
-                # out = tokens[0] + " ".join(cache["options"])
-                out = tokens[0]
+                out = cache["base_dir"] + " ".join(cache["options"])
+                # out = tokens[0]
                 sys.stdout.write("\n")
                 sys.stdout.flush()
                 return out
