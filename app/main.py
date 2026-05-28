@@ -67,10 +67,9 @@ def make_completer(shell: Shell):
                 sys.stdout.flush()
                 return None
             if cache["tab_count"] > 1:
-                out = " ".join(cache["options"])
+                out = tokens[0] + " ".join(cache["options"])
                 sys.stdout.write("\n")
                 sys.stdout.flush()
-                readline.redisplay()
                 return out
 
     return completer
