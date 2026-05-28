@@ -37,7 +37,9 @@ def make_completer(shell: Shell):
                     )["options"]
                 else:
                     display_dir, partial_file = partial.rsplit("/", 1)
-                    print(f"Display dir: {display_dir}, partial file: {partial_file}")
+                    sys.stdout.write(
+                        f"Display dir: {display_dir}, partial file: {partial_file}\n"
+                    )
                     resolve_dir = (
                         display_dir
                         if partial.startswith("/")
