@@ -68,7 +68,7 @@ def make_completer(shell: Shell):
                 # out = tokens[0]
                 sys.stdout.write(out + "\n")
                 sys.stdout.flush()
-                return None
+                return ""
 
     return completer
 
