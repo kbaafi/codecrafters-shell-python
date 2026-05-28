@@ -38,13 +38,13 @@ def make_completer(shell: Shell):
                     options = build_file_system_completion_options(
                         shell._ctx.cwd, partial, line
                     )["options"]
-                    if len(options) > 0:
-                        if cache["tab_count"] == 1:
-                            print(cache["text"])
-                            sys.stdout.write("\a")
+                    # if len(options) > 0:
+                    #     if cache["tab_count"] == 1:
+                    #         print(cache["text"])
+                    #         sys.stdout.write("\a")
 
-                            sys.stdout.flush()
-                            return None
+                    #         sys.stdout.flush()
+                    #         return None
                 else:
                     display_dir, partial_file = partial.rsplit("/", 1)
                     resolve_dir = (
