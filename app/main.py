@@ -13,7 +13,7 @@ def make_completer(shell: Shell):
         options: list[str] = []
         for entry in os.scandir(base_dir):
             if entry.is_file() and entry.name.startswith(partial_name):
-                options.append(f"{entry.name} ")
+                options.append(f"{entry.name}")
             elif entry.is_dir() and entry.name.startswith(partial_name):
                 options.append(f"{entry.name}/")
         options = sorted(options)
@@ -60,12 +60,12 @@ def make_completer(shell: Shell):
                 except OSError:
                     options = []
 
-            if state == 0 and len(options) > 0 and cache["tab_count"] == 0:
+            if len(options) > 0 and cache["tab_count"] == 0:
                 cache["tab_count"] += 1
                 sys.stdout.write("\a")
                 sys.stdout.flush()
                 return None
-            if state == 0 and len(options) > 0 and cache["tab_count"] > 0:
+            elif len(options) > 0 and cache["tab_count"] > 0:
                 cache["tab_count"] += 1
                 sys.stdout.write(" ".join(options))
                 sys.stdout.flush()
