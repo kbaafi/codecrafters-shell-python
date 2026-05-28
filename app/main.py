@@ -26,8 +26,8 @@ def make_completer(shell: Shell):
         line = readline.get_line_buffer()
         tokens = line.strip().split()
 
-        print("text:", text)
-        print("cache_text:", cache["text"])
+        # print("text:", text)
+        # print("cache_text:", cache["text"])
         if len(tokens) == 0 or (len(tokens) == 1 and not line.endswith(" ")):
             options = [
                 f"{cmd} " for cmd in shell.known_commands if cmd.startswith(text)
@@ -45,6 +45,7 @@ def make_completer(shell: Shell):
 
                 #         sys.stdout.flush()
                 #         return None
+                return " ".join(options)
             else:
                 display_dir, partial_file = partial.rsplit("/", 1)
                 resolve_dir = (
