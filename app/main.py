@@ -67,9 +67,11 @@ def make_completer(shell: Shell):
                     return None
                 elif len(options) > 0 and cache["tab_count"] > 0:
                     cache["tab_count"] += 1
+
+                    out = " ".join(options) + "\n"
+                    sys.stdout.write(out)
                     sys.stdout.flush()
-                    # out = "\n" + " ".join(options)
-                    return ""
+                    return None
 
             # if text != cache["text"]:
             #     cache["tab_count"] = 0
