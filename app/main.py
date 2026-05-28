@@ -59,17 +59,17 @@ def make_completer(shell: Shell):
                     )["options"]
                 except OSError:
                     options = []
-
-            if len(options) > 0 and cache["tab_count"] == 0:
-                cache["tab_count"] += 1
-                sys.stdout.write("\a")
-                sys.stdout.flush()
-                return None
-            elif len(options) > 0 and cache["tab_count"] > 0:
-                cache["tab_count"] += 1
-                sys.stdout.write(" ".join(options))
-                sys.stdout.flush()
-                return text
+            if state == 0:
+                if len(options) > 0 and cache["tab_count"] == 0:
+                    cache["tab_count"] += 1
+                    sys.stdout.write("\a")
+                    sys.stdout.flush()
+                    return None
+                elif len(options) > 0 and cache["tab_count"] > 0:
+                    cache["tab_count"] += 1
+                    sys.stdout.write(" ".join(options))
+                    sys.stdout.flush()
+                    return text
 
             # if text != cache["text"]:
             #     cache["tab_count"] = 0
