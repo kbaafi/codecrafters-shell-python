@@ -69,7 +69,7 @@ def make_completer(shell: Shell):
                     cache["tab_count"] += 1
                     sys.stdout.flush()
                     # out = "\n" + " ".join(options)
-                    return line
+                    return ""
 
             # if text != cache["text"]:
             #     cache["tab_count"] = 0
