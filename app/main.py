@@ -25,6 +25,9 @@ def make_completer(shell: Shell):
         if state == 0:
             line = readline.get_line_buffer()
             tokens = line.strip().split()
+
+            print("text:", text)
+            print("cache_text:", cache["text"])
             if len(tokens) == 0 or (len(tokens) == 1 and not line.endswith(" ")):
                 options = [
                     f"{cmd} " for cmd in shell.known_commands if cmd.startswith(text)
@@ -35,6 +38,11 @@ def make_completer(shell: Shell):
                     options = build_file_system_completion_options(
                         shell._ctx.cwd, partial, line
                     )["options"]
+                    if len(options) > 0:
+                        if cache["tab_count"] == 1:
+                            sys.stdout.write("\a")
+                            sys.stdout.flush()
+                            return None
                 else:
                     display_dir, partial_file = partial.rsplit("/", 1)
                     resolve_dir = (
@@ -49,26 +57,26 @@ def make_completer(shell: Shell):
                     except OSError:
                         options = []
 
-            if text != cache["text"]:
-                cache["tab_count"] = 0
-                cache["text"] = text
-            cache["options"] = options
-            cache["tab_count"] += 1
+            # if text != cache["text"]:
+            #     cache["tab_count"] = 0
+            #     cache["text"] = text
+            # cache["options"] = options
+            # cache["tab_count"] += 1
 
-            if len(cache["options"]) == 0:
-                return None
-            if len(cache["options"]) == 1:
-                return cache["options"][0]
-            if cache["tab_count"] == 1:
-                sys.stdout.write("\a")
-                sys.stdout.flush()
-                return None
-            if cache["tab_count"] > 1:
-                out = cache["base_dir"] + " ".join(cache["options"])
-                # out = tokens[0]
-                sys.stdout.write("")
-                sys.stdout.flush()
-                return out
+            # if len(cache["options"]) == 0:
+            #     return None
+            # if len(cache["options"]) == 1:
+            #     return cache["options"][0]
+            # if cache["tab_count"] == 1:
+            #     sys.stdout.write("\a")
+            #     sys.stdout.flush()
+            #     return None
+            # if cache["tab_count"] > 1:
+            #     out = cache["base_dir"] + " ".join(cache["options"])
+            #     # out = tokens[0]
+            #     sys.stdout.write("")
+            #     sys.stdout.flush()
+            #     return out
 
     return completer
 
