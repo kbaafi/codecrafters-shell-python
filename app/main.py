@@ -13,7 +13,7 @@ def make_completer(shell: Shell):
         options: list[str] = []
         for entry in os.scandir(base_dir):
             if entry.is_file() and entry.name.startswith(partial_name):
-                options.append(f"{entry.name}")
+                options.append(f"{entry.name} ")
             elif entry.is_dir() and entry.name.startswith(partial_name):
                 options.append(f"{entry.name}/")
         options = sorted(options)
@@ -37,6 +37,7 @@ def make_completer(shell: Shell):
                     )["options"]
                 else:
                     display_dir, partial_file = partial.rsplit("/", 1)
+                    print(f"Display dir: {display_dir}, partial file: {partial_file}")
                     resolve_dir = (
                         display_dir
                         if partial.startswith("/")
