@@ -41,6 +41,7 @@ def make_completer(shell: Shell):
                     if len(options) > 0:
                         if cache["tab_count"] == 1:
                             sys.stdout.write("\a")
+                            print(cache["text"])
                             sys.stdout.flush()
                             return None
                 else:
