@@ -45,7 +45,7 @@ def make_completer(shell: Shell):
 
                 #         sys.stdout.flush()
                 #         return None
-                return " ".join(options)
+                # return " ".join(options)
             else:
                 display_dir, partial_file = partial.rsplit("/", 1)
                 resolve_dir = (
