@@ -60,6 +60,15 @@ def make_completer(shell: Shell):
                 except OSError:
                     options = []
 
+            if state == 0 and len(options) > 0 and cache["tab_count"] == 0:
+                cache["tab_count"] += 1
+                sys.stdout.write("\a")
+                sys.stdout.flush()
+                return None
+            if state == 0 and len(options) > 0 and cache["tab_count"] > 0:
+                cache["tab_count"] += 1
+                return " ".join(options)
+
             # if text != cache["text"]:
             #     cache["tab_count"] = 0
             #     cache["text"] = text
