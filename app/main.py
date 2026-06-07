@@ -31,8 +31,8 @@ def make_completer(shell: Shell):
         # print("cache_text:", cache["text"])
         # if len(tokens) == 0 or (len(tokens) == 1 and not line.endswith(" ")):
         options = [f"{cmd} " for cmd in shell.known_commands if cmd.startswith(text)]
-        if state < len(options):
-            return options[state]
+        # if state < len(options):
+        #     return options[state]
 
         partial = tokens[-1]
         if "/" not in partial:
@@ -60,41 +60,42 @@ def make_completer(shell: Shell):
                 )["options"]
             except OSError:
                 options = []
-        if state == 0:
-            if len(options) > 0 and cache["tab_count"] == 0:
-                cache["tab_count"] += 1
-                sys.stdout.write("\a")
-                sys.stdout.flush()
-                return None
-            elif len(options) > 0 and cache["tab_count"] > 0:
-                cache["tab_count"] += 1
 
-                out = " ".join(options)
-                sys.stdout.write(out)
-                sys.stdout.flush()
-                return "\n"
+        # if state == 0:
+        #     if len(options) > 0 and cache["tab_count"] == 0:
+        #         cache["tab_count"] += 1
+        #         sys.stdout.write("\a")
+        #         sys.stdout.flush()
+        #         return None
+        #     elif len(options) > 0 and cache["tab_count"] > 0:
+        #         cache["tab_count"] += 1
 
-            # if text != cache["text"]:
-            #     cache["tab_count"] = 0
-            #     cache["text"] = text
-            # cache["options"] = options
-            # cache["tab_count"] += 1
+        #         out = " ".join(options)
+        #         sys.stdout.write(out)
+        #         sys.stdout.flush()
+        #         return "\n"
 
-            # if len(cache["options"]) == 0:
-            #     return None
-            # if len(cache["options"]) == 1:
-            #     return cache["options"][0]
-            # if cache["tab_count"] == 1:
-            #     sys.stdout.write("\a")
-            #     sys.stdout.flush()
-            #     return None
-            # if cache["tab_count"] > 1:
-            #     out = cache["base_dir"] + " ".join(cache["options"])
-            #     # out = tokens[0]
-            #     sys.stdout.write("")
-            #     sys.stdout.flush()
-            #     return out
-        return None
+        # if text != cache["text"]:
+        #     cache["tab_count"] = 0
+        #     cache["text"] = text
+        # cache["options"] = options
+        # cache["tab_count"] += 1
+
+        # if len(cache["options"]) == 0:
+        #     return None
+        # if len(cache["options"]) == 1:
+        #     return cache["options"][0]
+        # if cache["tab_count"] == 1:
+        #     sys.stdout.write("\a")
+        #     sys.stdout.flush()
+        #     return None
+        # if cache["tab_count"] > 1:
+        #     out = cache["base_dir"] + " ".join(cache["options"])
+        #     # out = tokens[0]
+        #     sys.stdout.write("")
+        #     sys.stdout.flush()
+        #     return out
+        return options[state] if state < len(options) else None
 
     return completer
 
@@ -104,6 +105,9 @@ def main():
     completer = make_completer(shell)
     readline.set_completer(completer)
     readline.parse_and_bind("tab: complete")
+    readline.parse_and_bind("set bell-style audible")
+    readline.parse_and_bind("set bell-style visible")
+    readline.parse_and_bind("set show-all-if-ambiguous off")
 
     while True:
         user_input = input(f"{PROMPT}")
