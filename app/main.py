@@ -10,11 +10,11 @@ from .shell import Shell
 def make_completer(shell: Shell):
     cache = {"options": [], "text": None, "tab_count": 0, "base_dir": None}
 
-    def build_file_system_completion_options(base_dir, partial_name, text):
+    def build_file_system_matches(base_dir, partial_name, text):
         options: list[str] = []
         for entry in os.scandir(base_dir):
             if entry.is_file() and entry.name.startswith(partial_name):
-                options.append(f"{entry.name} ")
+                options.append(f"{entry.name}")
             elif entry.is_dir() and entry.name.startswith(partial_name):
                 options.append(f"{entry.name}/")
         options = sorted(options)
@@ -24,7 +24,8 @@ def make_completer(shell: Shell):
         nonlocal cache
 
         # if state == 0:
-        line = readline.get_line_buffer()
+        # line = readline.get_line_buffer()
+        line = text
         tokens = line.strip().split()
 
         # print("text:", text)
@@ -36,9 +37,9 @@ def make_completer(shell: Shell):
 
         partial = tokens[-1]
         if "/" not in partial:
-            options = build_file_system_completion_options(
-                shell._ctx.cwd, partial, line
-            )["options"]
+            options = build_file_system_matches(shell._ctx.cwd, partial, line)[
+                "options"
+            ]
             # if len(options) > 0:
             #     if cache["tab_count"] == 1:
             #         print(cache["text"])
@@ -55,9 +56,9 @@ def make_completer(shell: Shell):
                 else os.path.join(shell._ctx.cwd, display_dir or "/")
             )
             try:
-                options = build_file_system_completion_options(
-                    resolve_dir, partial_file, line
-                )["options"]
+                options = build_file_system_matches(resolve_dir, partial_file, line)[
+                    "options"
+                ]
             except OSError:
                 options = []
 
