@@ -70,8 +70,8 @@ def make_completer(shell: Shell):
             # print("argstr:", argstr, argstr.rsplit("/", 1))
             # base_dir, partial_file = argstr.rsplit("/", 1)
 
-            print("base_dir:", base_dir)
-            print("partial_file:", partial_file)
+            # print("base_dir:", base_dir)
+            # print("partial_file:", partial_file)
             resolved_dir = (
                 base_dir
                 if text.startswith("/")
