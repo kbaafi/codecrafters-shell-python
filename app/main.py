@@ -37,40 +37,40 @@ def make_completer(shell: Shell):
         command, argstr = (
             line.strip().rsplit(" ", 1) if " " in line.strip() else (line.strip(), "")
         )
-        options = [f"{cmd} " for cmd in shell.known_commands if cmd.startswith(command)]
+        # options = [f"{cmd} " for cmd in shell.known_commands if cmd.startswith(command)]
         # if state < len(options):
         #     return options[state]
 
-        if options == []:
-            # tokens = line.strip().split()
-            # partial = tokens[-1]
-            # if "/" not in partial:
-            #     options = build_file_system_matches(shell._ctx.cwd, partial, line)[
-            #         "options"
-            #     ]
-            #     # if len(options) > 0:
-            #     #     if cache["tab_count"] == 1:
-            #     #         print(cache["text"])
-            #     #         sys.stdout.write("\a")
+        # if options == []:
+        # tokens = line.strip().split()
+        # partial = tokens[-1]
+        # if "/" not in partial:
+        #     options = build_file_system_matches(shell._ctx.cwd, partial, line)[
+        #         "options"
+        #     ]
+        #     # if len(options) > 0:
+        #     #     if cache["tab_count"] == 1:
+        #     #         print(cache["text"])
+        #     #         sys.stdout.write("\a")
 
-            #     #         sys.stdout.flush()
-            #     #         return None
-            #     # return " ".join(options)
-            # else:
-            base_dir, partial_file = argstr.rsplit("/", 1)
-            print("base_dir:", base_dir)
-            print("partial_file:", partial_file)
-            resolved_dir = (
-                base_dir
-                if argstr.startswith("/")
-                else os.path.join(shell._ctx.cwd, base_dir or "/")
-            )
-            try:
-                options = build_file_system_matches(resolved_dir, partial_file, line)[
-                    "options"
-                ]
-            except OSError:
-                options = []
+        #     #         sys.stdout.flush()
+        #     #         return None
+        #     # return " ".join(options)
+        # else:
+        base_dir, partial_file = argstr.rsplit("/", 1)
+        print("base_dir:", base_dir)
+        print("partial_file:", partial_file)
+        resolved_dir = (
+            base_dir
+            if argstr.startswith("/")
+            else os.path.join(shell._ctx.cwd, base_dir or "/")
+        )
+        try:
+            options = build_file_system_matches(resolved_dir, partial_file, line)[
+                "options"
+            ]
+        except OSError:
+            options = []
 
         # if state == 0:
         #     if len(options) > 0 and cache["tab_count"] == 0:
