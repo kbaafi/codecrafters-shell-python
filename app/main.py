@@ -39,7 +39,7 @@ def make_completer(shell: Shell):
         # )
         argstr = text
         # print("command:", command)
-        # print("argstr:", argstr)
+        print("argstr:", argstr)
         # print("text:", text)
         # options = [f"{cmd} " for cmd in shell.known_commands if cmd.startswith(command)]
         # if state < len(options):
