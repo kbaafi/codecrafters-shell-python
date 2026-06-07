@@ -12,11 +12,14 @@ def make_completer(shell: Shell):
 
     def build_file_system_matches(base_dir, partial_name, text):
         options: list[str] = []
-        for entry in os.scandir(base_dir):
-            if entry.is_file() and entry.name.startswith(partial_name):
-                options.append(f"{entry.name} ")
-            elif entry.is_dir() and entry.name.startswith(partial_name):
-                options.append(f"{entry.name}/")
+        if not partial_name or partial_name == "":
+            options = [base_dir]
+        else:
+            for entry in os.scandir(base_dir):
+                if entry.is_file() and entry.name.startswith(partial_name):
+                    options.append(f"{entry.name} ")
+                elif entry.is_dir() and entry.name.startswith(partial_name):
+                    options.append(f"{entry.name}/")
         options = sorted(options)
         return {"options": options, "text": text, "base_dir": base_dir}
 
@@ -26,7 +29,6 @@ def make_completer(shell: Shell):
         # if state == 0:
         # line = readline.get_line_buffer()
         line = text
-        tokens = line.strip().split()
 
         # print("text:", text)
         # print("cache_text:", cache["text"])
@@ -35,20 +37,22 @@ def make_completer(shell: Shell):
         # if state < len(options):
         #     return options[state]
 
-        partial = tokens[-1]
-        if "/" not in partial:
-            options = build_file_system_matches(shell._ctx.cwd, partial, line)[
-                "options"
-            ]
-            # if len(options) > 0:
-            #     if cache["tab_count"] == 1:
-            #         print(cache["text"])
-            #         sys.stdout.write("\a")
+        if options == []:
+            tokens = line.strip().split()
+            partial = tokens[-1]
+            # if "/" not in partial:
+            #     options = build_file_system_matches(shell._ctx.cwd, partial, line)[
+            #         "options"
+            #     ]
+            #     # if len(options) > 0:
+            #     #     if cache["tab_count"] == 1:
+            #     #         print(cache["text"])
+            #     #         sys.stdout.write("\a")
 
-            #         sys.stdout.flush()
-            #         return None
-            # return " ".join(options)
-        else:
+            #     #         sys.stdout.flush()
+            #     #         return None
+            #     # return " ".join(options)
+            # else:
             display_dir, partial_file = partial.rsplit("/", 1)
             resolve_dir = (
                 display_dir
