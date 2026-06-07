@@ -74,7 +74,7 @@ def make_completer(shell: Shell):
                 else os.path.join(shell._ctx.cwd, base_dir or "/")
             )
             try:
-                options = build_file_system_matches(resolved_dir, partial_file, line)[
+                options = build_file_system_matches(resolved_dir, partial_file, argstr)[
                     "options"
                 ]
             except OSError:
