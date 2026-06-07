@@ -110,6 +110,7 @@ def make_completer(shell: Shell):
             sys.stdout.write("\a")
             sys.stdout.flush()
             return None
+        print("options:", options)
         return options[state] if state < len(options) else None
 
     return completer
