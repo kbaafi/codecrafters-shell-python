@@ -14,7 +14,7 @@ def make_completer(shell: Shell):
         options: list[str] = []
         for entry in os.scandir(base_dir):
             if entry.is_file() and entry.name.startswith(partial_name):
-                options.append(f"{entry.name}")
+                options.append(f"{entry.name} ")
             elif entry.is_dir() and entry.name.startswith(partial_name):
                 options.append(f"{entry.name}/")
         options = sorted(options)
