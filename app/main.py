@@ -37,6 +37,9 @@ def make_completer(shell: Shell):
         command, argstr = (
             line.strip().rsplit(" ", 1) if " " in line.strip() else (line.strip(), "")
         )
+        print("command:", command)
+        print("argstr:", argstr)
+        print("text:", text)
         # options = [f"{cmd} " for cmd in shell.known_commands if cmd.startswith(command)]
         # if state < len(options):
         #     return options[state]
