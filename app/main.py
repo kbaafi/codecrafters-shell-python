@@ -61,8 +61,9 @@ def make_completer(shell: Shell):
         #     #         return None
         #     # return " ".join(options)
         # else:
-        print("argstr:", argstr)
+
         base_dir, partial_file = argstr.rsplit("/", 1)
+        print("argstr:", argstr)
         print("base_dir:", base_dir)
         print("partial_file:", partial_file)
         resolved_dir = (
