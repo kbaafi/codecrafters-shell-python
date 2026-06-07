@@ -34,12 +34,13 @@ def make_completer(shell: Shell):
         # print("text:", text)
         # print("cache_text:", cache["text"])
         # if len(tokens) == 0 or (len(tokens) == 1 and not line.endswith(" ")):
-        command, argstr = (
-            line.strip().rsplit(" ", 1) if " " in line.strip() else (line.strip(), "")
-        )
-        print("command:", command)
-        print("argstr:", argstr)
-        print("text:", text)
+        # command, argstr = (
+        #     line.strip().rsplit(" ", 1) if " " in line.strip() else (line.strip(), "")
+        # )
+        argstr = text
+        # print("command:", command)
+        # print("argstr:", argstr)
+        # print("text:", text)
         # options = [f"{cmd} " for cmd in shell.known_commands if cmd.startswith(command)]
         # if state < len(options):
         #     return options[state]
@@ -113,7 +114,7 @@ def make_completer(shell: Shell):
             sys.stdout.write("\a")
             sys.stdout.flush()
             return None
-        print("options:", options)
+        # print("options:", options)
         return options[state] if state < len(options) else None
 
     return completer
