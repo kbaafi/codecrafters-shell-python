@@ -65,7 +65,7 @@ def make_completer(shell: Shell):
             if "/" in text:
                 base_dir, partial_file = text.rsplit("/", 1)
             else:
-                base_dir, partial_file = "", text
+                base_dir, partial_file = text, ""
 
             # print("argstr:", argstr, argstr.rsplit("/", 1))
             # base_dir, partial_file = argstr.rsplit("/", 1)
