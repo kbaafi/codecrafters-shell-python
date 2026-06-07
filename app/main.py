@@ -83,6 +83,7 @@ def make_completer(shell: Shell):
                 ]
             except OSError:
                 options = []
+            print("options:", options)
 
         # if state == 0:
         #     if len(options) > 0 and cache["tab_count"] == 0:
