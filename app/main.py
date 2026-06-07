@@ -62,9 +62,13 @@ def make_completer(shell: Shell):
         #     # return " ".join(options)
         # else:
         if options == []:
-            argstr = text
-            print("argstr:", argstr, argstr.rsplit("/", 1))
-            base_dir, partial_file = argstr.rsplit("/", 1)
+            if "/" in text:
+                base_dir, partial_file = text.rsplit("/", 1)
+            else:
+                base_dir, partial_file = "", text
+
+            # print("argstr:", argstr, argstr.rsplit("/", 1))
+            # base_dir, partial_file = argstr.rsplit("/", 1)
 
             print("base_dir:", base_dir)
             print("partial_file:", partial_file)
@@ -74,7 +78,7 @@ def make_completer(shell: Shell):
                 else os.path.join(shell._ctx.cwd, base_dir or "/")
             )
             try:
-                options = build_file_system_matches(resolved_dir, partial_file, argstr)[
+                options = build_file_system_matches(resolved_dir, partial_file, text)[
                     "options"
                 ]
             except OSError:
