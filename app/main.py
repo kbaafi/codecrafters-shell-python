@@ -39,7 +39,7 @@ def make_completer(shell: Shell):
         # )
         argstr = text
         # print("command:", command)
-        print("argstr:", argstr)
+        # print("argstr:", argstr)
         # print("text:", text)
         # options = [f"{cmd} " for cmd in shell.known_commands if cmd.startswith(command)]
         # if state < len(options):
@@ -61,6 +61,7 @@ def make_completer(shell: Shell):
         #     #         return None
         #     # return " ".join(options)
         # else:
+        print("argstr:", argstr)
         base_dir, partial_file = argstr.rsplit("/", 1)
         print("base_dir:", base_dir)
         print("partial_file:", partial_file)
