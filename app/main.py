@@ -95,6 +95,9 @@ def make_completer(shell: Shell):
         #     sys.stdout.write("")
         #     sys.stdout.flush()
         #     return out
+        if state == 0 and len(options) > 1:
+            sys.stdout.write("\a")
+            sys.stdout.flush()
         return options[state] if state < len(options) else None
 
     return completer
@@ -106,7 +109,6 @@ def main():
     readline.set_completer(completer)
     readline.parse_and_bind("tab: complete")
     readline.parse_and_bind("set bell-style audible")
-    readline.parse_and_bind("set bell-style visible")
     readline.parse_and_bind("set show-all-if-ambiguous off")
 
     while True:
