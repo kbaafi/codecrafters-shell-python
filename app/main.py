@@ -28,19 +28,22 @@ def make_completer(shell: Shell):
 
         # if state == 0:
         line = readline.get_line_buffer()
-        print("line:", line)
-        print("text:", text)
+        # print("line:", line)
+        # print("text:", text)
 
         # print("text:", text)
         # print("cache_text:", cache["text"])
         # if len(tokens) == 0 or (len(tokens) == 1 and not line.endswith(" ")):
-        options = [f"{cmd} " for cmd in shell.known_commands if cmd.startswith(text)]
+        command, argstr = (
+            line.strip().rsplit(" ", 1) if " " in line.strip() else (line.strip(), "")
+        )
+        options = [f"{cmd} " for cmd in shell.known_commands if cmd.startswith(command)]
         # if state < len(options):
         #     return options[state]
 
         if options == []:
-            tokens = line.strip().split()
-            partial = tokens[-1]
+            # tokens = line.strip().split()
+            # partial = tokens[-1]
             # if "/" not in partial:
             #     options = build_file_system_matches(shell._ctx.cwd, partial, line)[
             #         "options"
@@ -54,14 +57,14 @@ def make_completer(shell: Shell):
             #     #         return None
             #     # return " ".join(options)
             # else:
-            display_dir, partial_file = partial.rsplit("/", 1)
-            resolve_dir = (
-                display_dir
-                if partial.startswith("/")
-                else os.path.join(shell._ctx.cwd, display_dir or "/")
+            base_dir, partial_file = argstr.rsplit("/", 1)
+            resolved_dir = (
+                base_dir
+                if argstr.startswith("/")
+                else os.path.join(shell._ctx.cwd, base_dir or "/")
             )
             try:
-                options = build_file_system_matches(resolve_dir, partial_file, line)[
+                options = build_file_system_matches(resolved_dir, partial_file, line)[
                     "options"
                 ]
             except OSError:
