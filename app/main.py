@@ -62,8 +62,9 @@ def make_completer(shell: Shell):
         #     # return " ".join(options)
         # else:
         if options == []:
-            print("argstr:", text)
-            base_dir, partial_file = text.rsplit("/", 1)
+            argstr = text
+            print("argstr:", argstr)
+            base_dir, partial_file = argstr.rsplit("/", 1)
 
             print("base_dir:", base_dir)
             print("partial_file:", partial_file)
