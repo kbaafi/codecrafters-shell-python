@@ -27,8 +27,9 @@ def make_completer(shell: Shell):
         nonlocal cache
 
         # if state == 0:
-        # line = readline.get_line_buffer()
-        line = text
+        line = readline.get_line_buffer()
+        print("line:", line)
+        print("text:", text)
 
         # print("text:", text)
         # print("cache_text:", cache["text"])
