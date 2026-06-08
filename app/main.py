@@ -77,6 +77,12 @@ def make_completer(shell: Shell):
                 if text.startswith("/")
                 else os.path.join(shell._ctx.cwd, base_dir or "/")
             )
+            # try:
+            #     options = build_file_system_matches(resolved_dir, partial_file, text)[
+            #         "options"
+            #     ]
+            # except OSError:
+            #     options = []
             try:
                 options = build_file_system_matches(resolved_dir, partial_file, text)[
                     "options"
@@ -122,7 +128,6 @@ def make_completer(shell: Shell):
         if state == 0 and len(options) > 1:
             sys.stdout.write("\a")
             sys.stdout.flush()
-        print("options:", options, "cwd:", shell._ctx.cwd, "read_cwd:", os.getcwd())
         return options[state] if state < len(options) else None
 
     return completer
