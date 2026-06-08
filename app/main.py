@@ -84,8 +84,12 @@ def make_completer(shell: Shell):
             # except OSError:
             #     options = []
             try:
-                options = build_file_system_matches(resolved_dir, partial_file, text)[
-                    "options"
+                prefix = (base_dir + "/") if "/" in text else ""
+                options = [
+                    prefix + o
+                    for o in build_file_system_matches(
+                        resolved_dir, partial_file, text
+                    )["options"]
                 ]
             except OSError:
                 options = []
