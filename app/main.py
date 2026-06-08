@@ -122,7 +122,7 @@ def make_completer(shell: Shell):
         if state == 0 and len(options) > 1:
             sys.stdout.write("\a")
             sys.stdout.flush()
-        print("options:", options)
+        print("options:", options, "cwd:", shell._ctx.cwd, "read_cwd:", os.getcwd())
         return options[state] if state < len(options) else None
 
     return completer
