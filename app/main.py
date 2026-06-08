@@ -85,6 +85,7 @@ def make_completer(shell: Shell):
             #     options = []
             try:
                 prefix = (base_dir + "/") if "/" in text else ""
+                print(prefix)
                 options = [
                     prefix + o
                     for o in build_file_system_matches(
