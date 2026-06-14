@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 import os
 import subprocess
 
@@ -34,6 +35,14 @@ def cd_handler(ctx: ShellContext, *args):
 def complete_handler(ctx: ShellContext, *args):
     _ = ctx
     _ = args
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-p", dest="print")
+    parsed_args, remaining_args = parser.parse_known_args(args)
+
+    if hasattr(parsed_args, "print"):
+        return Result(
+            value=f"complete: {parsed_args.print}: no completion specification"
+        )
     return Result(value="This is a placeholder built-in command.")
 
 
