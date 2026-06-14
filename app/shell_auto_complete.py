@@ -36,6 +36,7 @@ def make_completer(shell: Shell):
             options = []
 
         if options == [] and cmd and not text:
+            print("cmd:", cmd, "line:", line, "text:", text)
             options = [c for c in shell.known_commands if c.startswith(cmd)]
 
         if state == 0 and len(options) > 1:
