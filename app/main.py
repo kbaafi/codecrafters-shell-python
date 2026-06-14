@@ -8,8 +8,6 @@ from .shell import Shell
 
 
 def make_completer(shell: Shell):
-    # cache = {"options": [], "text": None, "tab_count": 0, "base_dir": None}
-
     def build_file_system_matches(base_dir, partial_name, cwd, text_prefix):
         resolved_dir = (
             base_dir
@@ -50,6 +48,7 @@ def main():
     shell = Shell()
     completer = make_completer(shell)
     readline.set_completer(completer)
+    readline.set_completer_delims(" \t\n;")
     readline.parse_and_bind("tab: complete")
     readline.parse_and_bind("set bell-style audible")
     readline.parse_and_bind("set show-all-if-ambiguous off")
