@@ -39,7 +39,7 @@ def complete_handler(ctx: ShellContext, *args):
     parser.add_argument("-p", dest="print")
     parser.add_argument("-C", dest="completer_script")
     parsed_args, remaining_args = parser.parse_known_args(args)
-    print(parsed_args, remaining_args)
+    # print(parsed_args, remaining_args)
 
     if hasattr(parsed_args, "print"):
         if parsed_args.print in ctx.completers:
