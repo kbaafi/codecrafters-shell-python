@@ -28,6 +28,7 @@ def make_completer(shell: Shell):
         is_command = not tokens or (len(tokens) == 1 and not line[-1].isspace())
 
         if is_command:
+            shell._refresh_executables()
             options = [f"{c} " for c in shell.known_commands if c.startswith(text)]
         else:
             arg = tokens[-1] if not line[-1].isspace() else ""

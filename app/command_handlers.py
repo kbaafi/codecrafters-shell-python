@@ -18,16 +18,10 @@ def echo_handler(ctx: ShellContext, *args):
 
 
 def cd_handler(ctx: ShellContext, *args):
-    path = args[0] if args else os.path.expanduser("~")
+    path = os.path.expanduser(args[0] if args else "~")
 
     if os.path.isabs(path):
         resolved = path
-    elif path.startswith("~"):
-        base_path = os.path.expanduser(path[0])
-        try:
-            resolved = base_path + path[1:]
-        except Exception:
-            resolved = base_path
     else:
         resolved = os.path.normpath(os.path.join(ctx.cwd, path))
 

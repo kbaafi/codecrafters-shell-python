@@ -68,9 +68,17 @@ class Shell:
             curr_result=Result(value=None, error=None),
         )
         self._parsed_input: ParsedInput = ParsedInput(tokens=[])
+        self._known_commands: list[str] = list(self._ctx.built_ins) + list(
+            self._ctx.executables
+        )
+
+    def _refresh_executables(self):
+        self._ctx.executables = get_executables()
+        self._known_commands = list(self._ctx.built_ins) + list(self._ctx.executables)
 
     def execute(self, parsed_input: ParsedInput):
         self._parsed_input = parsed_input
+        self._refresh_executables()
         if parsed_input.command in self._ctx.built_ins:
             self._ctx.curr_result = self._ctx.built_ins[parsed_input.command](
                 self._ctx, *parsed_input.args
@@ -107,6 +115,4 @@ class Shell:
 
     @property
     def known_commands(self):
-        builtins = [k for k, _ in self._ctx.built_ins.items()]
-        exes = [k for k, _ in self._ctx.executables.items()]
-        return builtins + exes
+        return self._known_commands
