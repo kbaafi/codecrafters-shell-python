@@ -49,7 +49,7 @@ def complete_handler(ctx: ShellContext, *args):
         # return Result(
         #     value=f"complete: {parsed_args.print}: no completion specification"
         # )
-    elif hasattr(parsed_args, "completer_script") and remaining_args:
+    elif hasattr(parsed_args, "completer_script") and len(remaining_args) > 0:
         ctx.completers[remaining_args[0]] = parsed_args.completer_script
         print(ctx.completers)
 
