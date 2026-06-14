@@ -50,6 +50,7 @@ def complete_handler(ctx: ShellContext, *args):
         # )
     elif hasattr(parsed_args, "completer_script") and remaining_args:
         ctx.completers[remaining_args[0]] = parsed_args.completer_script
+        print(ctx.completers)
 
     return Result(value=None)
 
