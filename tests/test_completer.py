@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock, patch
 
-from app.main import make_completer
+from app.shell_auto_complete import make_completer
 
 
 def make_shell(commands=None, cwd="/tmp", files=None):
@@ -58,6 +58,28 @@ def test_state_indexes_into_options():
         assert completer("e", 1) == "exit "
         assert completer("e", 2) == "env "
         assert completer("e", 3) is None
+
+
+# --- command vs file boundary ---
+
+
+def test_second_token_does_not_complete_commands(tmp_path):
+    (tmp_path / "echo.txt").write_text("")
+    shell = make_shell(commands=["echo", "exit"], cwd=str(tmp_path))
+    completer = make_completer(shell)
+    with patch("readline.get_line_buffer", return_value="echo ec"):
+        matches = complete_all(completer, "ec")
+    assert matches == ["echo.txt "]
+
+
+def test_trailing_space_after_command_completes_files_not_commands(tmp_path):
+    (tmp_path / "exit.log").write_text("")
+    shell = make_shell(commands=["echo", "exit"], cwd=str(tmp_path))
+    completer = make_completer(shell)
+    with patch("readline.get_line_buffer", return_value="echo "):
+        matches = complete_all(completer, "")
+    assert "exit " not in matches
+    assert "exit.log " in matches
 
 
 # --- file completion ---
@@ -142,7 +164,7 @@ def test_completes_absolute_path(tmp_path):
     partial = f"{tmp_path}/no"
     with patch("readline.get_line_buffer", return_value=f"cat {partial}"):
         matches = complete_all(completer, partial)
-    assert "notes.txt " in matches
+    assert f"{tmp_path}/notes.txt " in matches
 
 
 def test_completes_absolute_path_trailing_slash(tmp_path):
@@ -152,7 +174,7 @@ def test_completes_absolute_path_trailing_slash(tmp_path):
     partial = f"{tmp_path}/"
     with patch("readline.get_line_buffer", return_value=f"cat {partial}"):
         matches = complete_all(completer, partial)
-    assert "data.csv " in matches
+    assert f"{tmp_path}/data.csv " in matches
 
 
 def test_completes_relative_path(tmp_path):
@@ -164,7 +186,7 @@ def test_completes_relative_path(tmp_path):
     partial = "docs/re"
     with patch("readline.get_line_buffer", return_value=f"cat {partial}"):
         matches = complete_all(completer, partial)
-    assert "readme.txt " in matches
+    assert "docs/readme.txt " in matches
 
 
 def test_completes_relative_path_trailing_slash(tmp_path):
