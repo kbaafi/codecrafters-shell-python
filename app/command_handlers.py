@@ -41,12 +41,17 @@ def complete_handler(ctx: ShellContext, *args):
     parsed_args, remaining_args = parser.parse_known_args(args)
     # print(parsed_args, remaining_args)
 
-    match (parsed_args.print, parsed_args.completer_script):
-        case (cmd, None) if cmd is not None:
-            if cmd in ctx.completers:
-                return Result(value=f"complete -C '{ctx.completers[cmd]}' {cmd}")
-        case (None, script) if script is not None and remaining_args:
-            ctx.completers[remaining_args[0]] = script
+    if parsed_args.print is not None:
+        if parsed_args.print in ctx.completers:
+            return Result(
+                value=f"complete -C '{ctx.completers[parsed_args.print]}' {parsed_args.print}"
+            )
+        else:
+            return Result(
+                value=f"complete: {parsed_args.print}: no completion specification"
+            )
+    elif parsed_args.completer_script is not None and remaining_args:
+        ctx.completers[remaining_args[0]] = parsed_args.completer_script
 
     return Result(value=None)
 
