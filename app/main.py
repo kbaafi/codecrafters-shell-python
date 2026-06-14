@@ -8,7 +8,7 @@ from .shell import Shell
 
 
 def make_completer(shell: Shell):
-    cache = {"options": [], "text": None, "tab_count": 0, "base_dir": None}
+    # cache = {"options": [], "text": None, "tab_count": 0, "base_dir": None}
 
     def build_file_system_matches(base_dir, partial_name, cwd, text_prefix):
         resolved_dir = (
@@ -26,7 +26,7 @@ def make_completer(shell: Shell):
         return sorted(options)
 
     def completer(text: str, state: int):
-        nonlocal cache
+        # nonlocal cache
 
         # if state == 0:
         # line = readline.get_line_buffer()
@@ -43,7 +43,7 @@ def make_completer(shell: Shell):
         # print("command:", command)
         # print("argstr:", argstr)
         # print("text:", text)
-        # options = [f"{cmd} " for cmd in shell.known_commands if cmd.startswith(text)]
+        options = [f"{cmd} " for cmd in shell.known_commands if cmd.startswith(text)]
         # if state < len(options):
         #     return options[state]
 
@@ -63,16 +63,17 @@ def make_completer(shell: Shell):
         #     #         return None
         #     # return " ".join(options)
         # else:
-        line = readline.get_line_buffer()
-        arg = line.split()[-1] if line.split() and not line[-1].isspace() else text
-        base_dir, partial_file = arg.rsplit("/", 1) if "/" in arg else ("", arg)
-        text_prefix = text[: len(text) - len(partial_file)]
-        try:
-            options = build_file_system_matches(
-                base_dir, partial_file, shell._ctx.cwd, text_prefix
-            )
-        except OSError:
-            options = []
+        if options == []:
+            line = readline.get_line_buffer()
+            arg = line.split()[-1] if line.split() and not line[-1].isspace() else text
+            base_dir, partial_file = arg.rsplit("/", 1) if "/" in arg else ("", arg)
+            text_prefix = text[: len(text) - len(partial_file)]
+            try:
+                options = build_file_system_matches(
+                    base_dir, partial_file, shell._ctx.cwd, text_prefix
+                )
+            except OSError:
+                options = []
         # print("options:", options)
 
         # if state == 0:
