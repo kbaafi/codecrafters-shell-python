@@ -24,20 +24,21 @@ def make_completer(shell: Shell):
     def completer(text: str, state: int):
 
         line = readline.get_line_buffer()
-        cmd = line.split()[0] if line.split() else ""
-        arg = line.split()[-1] if line.split() and not line[-1].isspace() else text
-        base_dir, partial_file = arg.rsplit("/", 1) if "/" in arg else ("", arg)
-        text_prefix = text[: len(text) - len(partial_file)]
-        try:
-            options = build_file_system_matches(
-                base_dir, partial_file, shell._ctx.cwd, text_prefix
-            )
-        except OSError:
-            options = []
+        tokens = line.split()
+        is_command = not tokens or (len(tokens) == 1 and not line[-1].isspace())
 
-        if options == [] and cmd and not text:
-            print("cmd:", cmd, "line:", line, "text:", text)
-            options = [c for c in shell.known_commands if c.startswith(cmd)]
+        if is_command:
+            options = [f"{c} " for c in shell.known_commands if c.startswith(text)]
+        else:
+            arg = tokens[-1] if not line[-1].isspace() else ""
+            base_dir, partial_file = arg.rsplit("/", 1) if "/" in arg else ("", arg)
+            text_prefix = text[: len(text) - len(partial_file)]
+            try:
+                options = build_file_system_matches(
+                    base_dir, partial_file, shell._ctx.cwd, text_prefix
+                )
+            except OSError:
+                options = []
 
         if state == 0 and len(options) > 1:
             sys.stdout.write("\a")
