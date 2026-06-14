@@ -26,6 +26,7 @@ def make_completer(shell: Shell):
     def completer(text: str, state: int):
 
         line = readline.get_line_buffer()
+        cmd = line.split()[0] if line.split() else ""
         arg = line.split()[-1] if line.split() and not line[-1].isspace() else text
         base_dir, partial_file = arg.rsplit("/", 1) if "/" in arg else ("", arg)
         text_prefix = text[: len(text) - len(partial_file)]
@@ -36,8 +37,9 @@ def make_completer(shell: Shell):
         except OSError:
             options = []
 
-        # if options == []:
-        #     print("arg:", arg, "line:", line, "text:", text)
+        if options == [] and cmd:
+            options = [c for c in shell.known_commands if c.startswith(cmd)]
+            # print("arg:", arg, "line:", line, "text:", text)
 
         if state == 0 and len(options) > 1:
             sys.stdout.write("\a")
