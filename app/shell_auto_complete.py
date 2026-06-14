@@ -35,7 +35,7 @@ def make_completer(shell: Shell):
         except OSError:
             options = []
 
-        if options == [] and cmd:
+        if options == [] and cmd and not text:
             options = [c for c in shell.known_commands if c.startswith(cmd)]
 
         if state == 0 and len(options) > 1:
