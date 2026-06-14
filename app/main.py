@@ -37,7 +37,7 @@ def make_completer(shell: Shell):
             options = []
 
         if options == []:
-            print(arg, line, text)
+            print("arg:", arg, "line:", line, "text:", text)
 
         if state == 0 and len(options) > 1:
             sys.stdout.write("\a")
