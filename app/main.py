@@ -63,15 +63,9 @@ def make_completer(shell: Shell):
         #     #         return None
         #     # return " ".join(options)
         # else:
-        # if options == []:
-
-        base_dir, partial_file = text.rsplit("/", 1) if "/" in text else ("", text)
-
-        # print("argstr:", argstr, argstr.rsplit("/", 1))
-        # base_dir, partial_file = argstr.rsplit("/", 1)
-
-        # print("base_dir:", base_dir)
-        # print("partial_file:", partial_file)
+        line = readline.get_line_buffer()
+        arg = line.split()[-1] if line.split() and not line[-1].isspace() else text
+        base_dir, partial_file = arg.rsplit("/", 1) if "/" in arg else ("", arg)
         resolved_dir = (
             base_dir
             if base_dir.startswith("/")
@@ -84,7 +78,7 @@ def make_completer(shell: Shell):
         # except OSError:
         #     options = []
         try:
-            options = build_file_system_matches(resolved_dir, partial_file, text)[
+            options = build_file_system_matches(resolved_dir, partial_file, arg)[
                 "options"
             ]
         except OSError:
