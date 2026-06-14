@@ -40,6 +40,7 @@ class ShellContext:
     executables: dict
     curr_result: Result
     cwd: str = field(default_factory=os.getcwd)
+    completers: dict = field(default_factory=dict)
 
     def resolve_command(self, command: str) -> tuple[CommandType, str | None]:
         if command in self.built_ins:

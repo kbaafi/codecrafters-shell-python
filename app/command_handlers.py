@@ -37,13 +37,21 @@ def complete_handler(ctx: ShellContext, *args):
     _ = args
     parser = argparse.ArgumentParser()
     parser.add_argument("-p", dest="print")
+    parser.add_argument("-C", dest="completer_script")
     parsed_args, remaining_args = parser.parse_known_args(args)
 
     if hasattr(parsed_args, "print"):
+        if parsed_args.print in ctx.completers:
+            return Result(
+                value=f"complete -C {ctx.completers[parsed_args.print]} {parsed_args.print}"
+            )
         return Result(
             value=f"complete: {parsed_args.print}: no completion specification"
         )
-    return Result(value="This is a placeholder built-in command.")
+    elif hasattr(parsed_args, "completer_script") and remaining_args:
+        ctx.completers[remaining_args[0]] = parsed_args.completer_script
+
+    return Result(value=None)
 
 
 def type_handler(ctx: ShellContext, *args):
