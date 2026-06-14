@@ -31,6 +31,12 @@ def cd_handler(ctx: ShellContext, *args):
     return Result(value=f"cd: {path}: No such file or directory")
 
 
+def null_handler(ctx: ShellContext, *args):
+    _ = ctx
+    _ = args
+    return Result(value="This is a placeholder built-in command.")
+
+
 def type_handler(ctx: ShellContext, *args):
     command = args[0]
     command_type, path = ctx.resolve_command(command=command)

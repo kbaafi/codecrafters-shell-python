@@ -5,6 +5,7 @@ from .command_handlers import (
     cd_handler,
     echo_handler,
     exit_handler,
+    null_handler,
     pwd_handler,
     run_executable,
     type_handler,
@@ -40,6 +41,7 @@ def _default_built_ins():
         "type": type_handler,
         "pwd": pwd_handler,
         "cd": cd_handler,
+        "complete": null_handler,
     }
 
 
