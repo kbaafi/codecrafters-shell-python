@@ -12,14 +12,16 @@ def make_completer(shell: Shell):
 
     def build_file_system_matches(base_dir, partial_name, text):
         options: list[str] = []
-        if not partial_name or partial_name == "":
-            options = [base_dir]
-        else:
-            for entry in os.scandir(base_dir):
-                if entry.is_file() and entry.name.startswith(partial_name):
-                    options.append(f"{entry.name} ")
-                elif entry.is_dir() and entry.name.startswith(partial_name):
-                    options.append(f"{entry.name}/")
+        for entry in os.scandir(base_dir):
+            if entry.name.startswith(partial_name):
+                if entry.is_file():
+                    options.append(
+                        f"{text[: len(text) - len(partial_name)]}{entry.name} "
+                    )
+                elif entry.is_dir():
+                    options.append(
+                        f"{text[: len(text) - len(partial_name)]}{entry.name}/"
+                    )
         options = sorted(options)
         return {"options": options, "text": text, "base_dir": base_dir}
 
@@ -27,7 +29,7 @@ def make_completer(shell: Shell):
         nonlocal cache
 
         # if state == 0:
-        line = readline.get_line_buffer()
+        # line = readline.get_line_buffer()
         # print("line:", line)
         # print("text:", text)
 
@@ -62,10 +64,8 @@ def make_completer(shell: Shell):
         #     # return " ".join(options)
         # else:
         # if options == []:
-        if "/" in text:
-            base_dir, partial_file = text.rsplit("/", 1)
-        else:
-            base_dir, partial_file = "", text
+
+        base_dir, partial_file = text.rsplit("/", 1) if "/" in text else ("", text)
 
         # print("argstr:", argstr, argstr.rsplit("/", 1))
         # base_dir, partial_file = argstr.rsplit("/", 1)
