@@ -36,6 +36,9 @@ def make_completer(shell: Shell):
         except OSError:
             options = []
 
+        if options == []:
+            print(arg, line, text)
+
         if state == 0 and len(options) > 1:
             sys.stdout.write("\a")
             sys.stdout.flush()
