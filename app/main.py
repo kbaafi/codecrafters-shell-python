@@ -10,20 +10,21 @@ from .shell import Shell
 def make_completer(shell: Shell):
     cache = {"options": [], "text": None, "tab_count": 0, "base_dir": None}
 
-    def build_file_system_matches(base_dir, partial_name, text):
+    def build_file_system_matches(base_dir, partial_name, cwd):
+        prefix = base_dir + "/" if base_dir else ""
+        resolved_dir = (
+            base_dir
+            if base_dir.startswith("/")
+            else os.path.join(cwd, base_dir) if base_dir else cwd
+        )
         options: list[str] = []
-        for entry in os.scandir(base_dir):
+        for entry in os.scandir(resolved_dir):
             if entry.name.startswith(partial_name):
                 if entry.is_file():
-                    options.append(
-                        f"{text[: len(text) - len(partial_name)]}{entry.name} "
-                    )
+                    options.append(f"{prefix}{entry.name} ")
                 elif entry.is_dir():
-                    options.append(
-                        f"{text[: len(text) - len(partial_name)]}{entry.name}/"
-                    )
-        options = sorted(options)
-        return {"options": options, "text": text, "base_dir": base_dir}
+                    options.append(f"{prefix}{entry.name}/")
+        return sorted(options)
 
     def completer(text: str, state: int):
         nonlocal cache
@@ -66,21 +67,8 @@ def make_completer(shell: Shell):
         line = readline.get_line_buffer()
         arg = line.split()[-1] if line.split() and not line[-1].isspace() else text
         base_dir, partial_file = arg.rsplit("/", 1) if "/" in arg else ("", arg)
-        resolved_dir = (
-            base_dir
-            if base_dir.startswith("/")
-            else os.path.join(shell._ctx.cwd, base_dir) if base_dir else shell._ctx.cwd
-        )
-        # try:
-        #     options = build_file_system_matches(resolved_dir, partial_file, text)[
-        #         "options"
-        #     ]
-        # except OSError:
-        #     options = []
         try:
-            options = build_file_system_matches(resolved_dir, partial_file, arg)[
-                "options"
-            ]
+            options = build_file_system_matches(base_dir, partial_file, shell._ctx.cwd)
         except OSError:
             options = []
         # print("options:", options)
