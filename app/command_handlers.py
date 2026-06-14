@@ -44,12 +44,12 @@ def complete_handler(ctx: ShellContext, *args):
     if hasattr(parsed_args, "print"):
         if parsed_args.print in ctx.completers:
             return Result(
-                value=f"complete -C {ctx.completers[parsed_args.print]} {parsed_args.print}"
+                value=f"complete -C '{ctx.completers[parsed_args.print]}' {parsed_args.print}"
             )
         # return Result(
         #     value=f"complete: {parsed_args.print}: no completion specification"
         # )
-    elif hasattr(parsed_args, "completer_script") and len(remaining_args) > 0:
+    elif hasattr(parsed_args, "completer_script"):
         ctx.completers[remaining_args[0]] = parsed_args.completer_script
         print(ctx.completers)
 
