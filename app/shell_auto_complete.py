@@ -1,5 +1,6 @@
 import os
 import readline
+import subprocess
 import sys
 
 from .shell import Shell
@@ -29,7 +30,25 @@ def make_completer(shell: Shell):
 
         if is_command:
             shell._refresh_executables()
-            options = [f"{c} " for c in shell.known_commands if c.startswith(text)]
+            cmd = tokens[0] if tokens else text
+            if cmd in shell._ctx.completers:
+                script = shell._ctx.completers[cmd]
+                env = os.environ.copy()
+                env["COMP_LINE"] = line
+                env["COMP_POINT"] = str(len(line))
+                try:
+                    result = subprocess.run(
+                        # [script, cmd, text]
+                        script,
+                        capture_output=True,
+                        text=True,
+                        env=env,
+                    )
+                    options = [l for l in result.stdout.splitlines() if l]
+                except OSError:
+                    options = []
+            else:
+                options = [f"{c} " for c in shell.known_commands if c.startswith(text)]
         else:
             arg = tokens[-1] if not line[-1].isspace() else ""
             base_dir, partial_file = arg.rsplit("/", 1) if "/" in arg else ("", arg)
