@@ -65,6 +65,7 @@ def jobs_handler(ctx: ShellContext, *args):
         return Result(value="")
 
     output = []
+    done_jobs = []
     for job_id, process_info in ctx.jobs.items():
         job_order = " "
         if process_info.job_order == JobOrder.MOST_RECENT:
@@ -79,7 +80,10 @@ def jobs_handler(ctx: ShellContext, *args):
         status = f"[{job_id}]{job_order}  {running}{spaces}{command}"
         output.append(status)
         if process_info.program.poll() is not None:
-            del ctx.jobs[job_id]
+            done_jobs.append(job_id)
+
+    for job_id in done_jobs:
+        del ctx.jobs[job_id]
 
     return Result(value="\n".join(output))
 
