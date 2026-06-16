@@ -59,6 +59,23 @@ def complete_handler(ctx: ShellContext, *args):
     return Result(value=None)
 
 
+def jobs_handler(ctx: ShellContext, *args):
+    _ = args
+    if len(ctx.jobs) == 0:
+        return Result(value="")
+
+    output = []
+    for job_id, process_info in ctx.jobs.items():
+        most_recent = "+" if process_info.most_recent else " "
+        running = "Running" if process_info.program.poll() is None else "       "
+        spaces = " " * 17
+        command = " ".join(process_info.parsed_input.tokens)
+        status = f"[{job_id}]{most_recent}  {running}{spaces}{command}"
+        output.append(status)
+
+    return Result(value="\n".join(output))
+
+
 def type_handler(ctx: ShellContext, *args):
     command = args[0]
     command_type, path = ctx.resolve_command(command=command)

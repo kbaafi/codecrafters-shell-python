@@ -7,12 +7,13 @@ from .command_handlers import (
     complete_handler,
     echo_handler,
     exit_handler,
+    jobs_handler,
     pwd_handler,
     run_executable,
     type_handler,
 )
 from .common import ParsedInput
-from .models import Result, ShellContext
+from .models import ProcessInfo, Result, ShellContext
 
 
 def get_executables() -> dict[str, str]:
@@ -43,7 +44,7 @@ def _default_built_ins():
         "pwd": pwd_handler,
         "cd": cd_handler,
         "complete": complete_handler,
-        "jobs": lambda ctx, *args: Result(value=""),
+        "jobs": jobs_handler,
     }
 
 
@@ -88,7 +89,13 @@ class Shell:
         if parsed_input.is_background:
             job = subprocess.Popen(parsed_input.tokens[:-1])
             current_max_job_id = len(self._ctx.jobs)
-            self._ctx.jobs[current_max_job_id + 1] = job
+            for process_info in self._ctx.jobs.values():
+                process_info.most_recent = False
+
+            self._ctx.jobs[current_max_job_id + 1] = ProcessInfo(
+                program=job, parsed_input=parsed_input, most_recent=True
+            )
+
             self._ctx.curr_result = Result(
                 value=f"[{current_max_job_id + 1}] {job.pid}"
             )

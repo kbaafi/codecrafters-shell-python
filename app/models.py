@@ -33,6 +33,13 @@ class Result:
     interrupt: Optional[bool] = False
 
 
+@dataclass
+class ProcessInfo:
+    program: subprocess.Popen
+    parsed_input: ParsedInput
+    most_recent: bool = True
+
+
 class CommandType(Enum):
     BUILTIN = auto()
     EXECUTABLE = auto()
@@ -46,7 +53,7 @@ class ShellContext:
     curr_result: Result
     cwd: str = field(default_factory=os.getcwd)
     completers: dict[str, str] = field(default_factory=dict)
-    jobs: dict[int, subprocess.Popen] = field(default_factory=dict)
+    jobs: dict[int, ProcessInfo] = field(default_factory=dict)
 
     def resolve_command(self, command: str) -> tuple[CommandType, str | None]:
         if command in self.built_ins:
