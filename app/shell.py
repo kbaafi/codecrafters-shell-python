@@ -42,6 +42,9 @@ def _default_built_ins():
         "pwd": pwd_handler,
         "cd": cd_handler,
         "complete": complete_handler,
+        "jobs": lambda ctx, *args: Result(
+            value="Placeholder handler for background jobs\n"
+        ),
     }
 
 
