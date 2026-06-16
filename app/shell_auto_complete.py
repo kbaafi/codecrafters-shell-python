@@ -32,7 +32,9 @@ def make_completer(shell: Shell):
             shell._refresh_executables()
             cmd = tokens[0] if tokens else text
             if cmd in shell._ctx.completers:
+
                 script = shell._ctx.completers[cmd]
+                print(script, cmd, text)
                 env = os.environ.copy()
                 env["COMP_LINE"] = line
                 env["COMP_POINT"] = str(len(line))
