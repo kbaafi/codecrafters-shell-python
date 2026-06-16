@@ -34,7 +34,7 @@ def make_completer(shell: Shell):
             if cmd in shell._ctx.completers:
 
                 script = shell._ctx.completers[cmd]
-                print(script, cmd, text)
+                sys.stdout.write(script + " " + cmd + " " + text)
                 env = os.environ.copy()
                 env["COMP_LINE"] = line
                 env["COMP_POINT"] = str(len(line))
