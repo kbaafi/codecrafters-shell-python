@@ -54,6 +54,7 @@ def make_completer(shell: Shell):
                 options = [f"{c} " for c in shell.known_commands if c.startswith(text)]
         else:
             base_dir, partial_file = text.rsplit("/", 1) if "/" in text else ("", text)
+            sys.stdout.write(f"{base_dir=}, {partial_file=}\n")
             text_prefix = text[: len(text) - len(partial_file)]
             try:
                 options = build_file_system_matches(
