@@ -74,7 +74,7 @@ def jobs_handler(ctx: ShellContext, *args):
             job_order = "-"
         elif process_info.job_order == JobOrder.OTHER:
             job_order = " "
-        running = "Running" if process_info.program.poll() is None else "Done   "
+        running = "Running" if process_info.program.poll() is None else "Done"
         spaces = " " * 17
         command = " ".join(process_info.parsed_input.tokens)
         status = f"[{job_id}]{job_order}  {running}{spaces}{command}"
