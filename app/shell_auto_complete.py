@@ -27,9 +27,8 @@ def make_completer(shell: Shell):
         line = readline.get_line_buffer()
         tokens = line.split()
         is_command = not tokens or (len(tokens) == 1 and not line[-1].isspace())
-
+        sys.stdout.write(f"{' '.join(tokens)}\n")
         if is_command:
-            sys.stdout.write("is command")
             shell._refresh_executables()
             cmd = tokens[0] if tokens else text
             if cmd in shell._ctx.completers:
