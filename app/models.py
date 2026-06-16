@@ -1,4 +1,5 @@
 import os
+import subprocess
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Optional
@@ -45,6 +46,7 @@ class ShellContext:
     curr_result: Result
     cwd: str = field(default_factory=os.getcwd)
     completers: dict[str, str] = field(default_factory=dict)
+    jobs: dict[int, subprocess.Popen] = field(default_factory=dict)
 
     def resolve_command(self, command: str) -> tuple[CommandType, str | None]:
         if command in self.built_ins:

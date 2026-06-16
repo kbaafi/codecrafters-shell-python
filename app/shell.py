@@ -86,7 +86,12 @@ class Shell:
         self._parsed_input = parsed_input
 
         if parsed_input.is_background:
-            subprocess.Popen(parsed_input.tokens[:-1])
+            job = subprocess.Popen(parsed_input.tokens[:-1])
+            current_max_job_id = len(self._ctx.jobs)
+            self._ctx.jobs[current_max_job_id + 1] = job
+            self._ctx.curr_result = Result(
+                value=f"[{current_max_job_id + 1}] {job.pid}"
+            )
         else:
             if parsed_input.command in self._ctx.built_ins:
                 self._ctx.curr_result = self._ctx.built_ins[parsed_input.command](
