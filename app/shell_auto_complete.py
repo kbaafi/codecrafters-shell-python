@@ -13,7 +13,7 @@ def make_completer(shell: Shell):
             if base_dir.startswith("/")
             else os.path.join(cwd, base_dir) if base_dir else cwd
         )
-        sys.stdout.write(f"{resolved_dir=}\n")
+        sys.stdout.write(f"{resolved_dir=}, {partial_name=}\n")
         options: list[str] = []
         for entry in os.scandir(resolved_dir):
             if not partial_name:
