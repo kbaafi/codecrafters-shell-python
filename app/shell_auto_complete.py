@@ -21,9 +21,9 @@ def make_completer(shell: Shell):
                 elif entry.is_dir():
                     options.append(f"{text_prefix}{entry.name}/")
             elif entry.name.startswith(partial_name):
-                sys.stdout.write(
-                    f"\n{resolved_dir=}, {text_prefix=}, {partial_name=}\n"
-                )
+                # sys.stdout.write(
+                #     f"\n{resolved_dir=}, {text_prefix=}, {partial_name=}\n"
+                # )
                 if entry.is_file():
                     options.append(f"{text_prefix}{entry.name} ")
                 elif entry.is_dir():
