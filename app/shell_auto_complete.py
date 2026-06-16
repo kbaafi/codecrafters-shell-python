@@ -15,15 +15,15 @@ def make_completer(shell: Shell):
         )
         options: list[str] = []
         for entry in os.scandir(resolved_dir):
-            sys.stdout.write(
-                f"\n{entry.name=}, {entry.is_file()=}, {entry.is_dir()=} {resolved_dir=}, {text_prefix=}, {partial_name=}\n"
-            )
             if not partial_name:
                 if entry.is_file():
                     options.append(f"{text_prefix}{entry.name} ")
                 elif entry.is_dir():
                     options.append(f"{text_prefix}{entry.name}/")
             elif entry.name.startswith(partial_name):
+                sys.stdout.write(
+                    f"\n{entry.name=}, {entry.is_file()=}, {entry.is_dir()=} {resolved_dir=}, {text_prefix=}, {partial_name=}\n"
+                )
                 if entry.is_file():
                     options.append(f"{text_prefix}{entry.name} ")
                 elif entry.is_dir():
