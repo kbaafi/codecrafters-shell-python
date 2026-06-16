@@ -13,7 +13,6 @@ def make_completer(shell: Shell):
             if base_dir.startswith("/")
             else os.path.join(cwd, base_dir) if base_dir else cwd
         )
-        sys.stdout.write(f"{resolved_dir=}, {partial_name=}\n")
         options: list[str] = []
         for entry in os.scandir(resolved_dir):
             if not partial_name:
@@ -55,7 +54,7 @@ def make_completer(shell: Shell):
                 options = [f"{c} " for c in shell.known_commands if c.startswith(text)]
         else:
             base_dir, partial_file = text.rsplit("/", 1) if "/" in text else ("", text)
-            sys.stdout.write(f"{base_dir=}, {partial_file=}\n")
+            # sys.stdout.write(f"{base_dir=}, {partial_file=}\n")
             text_prefix = text[: len(text) - len(partial_file)]
             try:
                 options = build_file_system_matches(
