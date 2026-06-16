@@ -34,7 +34,7 @@ def make_completer(shell: Shell):
 
         line = readline.get_line_buffer()
         tokens = line.split()
-        is_command = len(tokens) == 1
+        is_command = len(tokens) == 1 and not line[-1].isspace()
         if is_command:
             shell._refresh_executables()
             cmd = tokens[0] if tokens else text
