@@ -16,7 +16,7 @@ def make_completer(shell: Shell):
         options: list[str] = []
         for entry in os.scandir(resolved_dir):
             sys.stdout.write(
-                f"\n{entry.name=}, {entry.is_file()=}, {entry.is_dir()=} {resolved_dir=}\n"
+                f"\n{entry.name=}, {entry.is_file()=}, {entry.is_dir()=} {resolved_dir=}, {text_prefix=}\n"
             )
             if not partial_name:
                 if entry.is_file():
