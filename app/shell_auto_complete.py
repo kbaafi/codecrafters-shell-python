@@ -43,7 +43,7 @@ def make_completer(shell: Shell):
             env["COMP_POINT"] = str(len(line))
             try:
                 result = subprocess.run(
-                    [script, cmd, previous_text, text],
+                    [script, cmd, text, previous_text],
                     capture_output=True,
                     text=True,
                     env=env,
