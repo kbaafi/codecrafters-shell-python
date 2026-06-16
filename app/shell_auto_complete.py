@@ -34,27 +34,27 @@ def make_completer(shell: Shell):
 
         line = readline.get_line_buffer()
         tokens = line.split()
-        is_command = len(tokens) == 1 and not line[-1].isspace()
-        if is_command:
-            shell._refresh_executables()
-            cmd = tokens[0] if tokens else text
-            if cmd in shell._ctx.completers:
-                script = shell._ctx.completers[cmd]
-                env = os.environ.copy()
-                env["COMP_LINE"] = line
-                env["COMP_POINT"] = str(len(line))
-                try:
-                    result = subprocess.run(
-                        [script, cmd],
-                        capture_output=True,
-                        text=True,
-                        env=env,
-                    )
-                    options = [f"{l} " for l in result.stdout.splitlines() if l]
-                except OSError:
-                    options = []
-            else:
-                options = [f"{c} " for c in shell.known_commands if c.startswith(text)]
+        shell._refresh_executables()
+        cmd = tokens[0] if tokens else ""
+        is_typing_command = len(tokens) == 1 and not line[-1].isspace()
+
+        if cmd in shell._ctx.completers:
+            script = shell._ctx.completers[cmd]
+            env = os.environ.copy()
+            env["COMP_LINE"] = line
+            env["COMP_POINT"] = str(len(line))
+            try:
+                result = subprocess.run(
+                    [script, cmd],
+                    capture_output=True,
+                    text=True,
+                    env=env,
+                )
+                options = [f"{l} " for l in result.stdout.splitlines() if l]
+            except OSError:
+                options = []
+        elif is_typing_command:
+            options = [f"{c} " for c in shell.known_commands if c.startswith(text)]
         else:
             base_dir, partial_file = text.rsplit("/", 1) if "/" in text else ("", text)
             text_prefix = text[: len(text) - len(partial_file)]
