@@ -47,7 +47,7 @@ def make_completer(shell: Shell):
                         text=True,
                         env=env,
                     )
-                    options = [l for l in result.stdout.splitlines() if l]
+                    options = [f"{l} " for l in result.stdout.splitlines() if l]
                 except OSError:
                     options = []
             else:
