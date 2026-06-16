@@ -28,14 +28,14 @@ def make_completer(shell: Shell):
         tokens = line.split()
         # is_command = not tokens or (len(tokens) == 1 and not line[-1].isspace())
         is_command = len(tokens) == 1
-        sys.stdout.write(f"{' '.join(tokens)}, {len(tokens), text}, {is_command}\n")
+        # sys.stdout.write(f"{' '.join(tokens)}, {len(tokens), text}, {is_command}\n")
         if is_command:
             shell._refresh_executables()
             cmd = tokens[0] if tokens else text
             if cmd in shell._ctx.completers:
 
                 script = shell._ctx.completers[cmd]
-                sys.stdout.write(script + " " + cmd + " " + text)
+                # sys.stdout.write(script + " " + cmd + " " + text)
                 env = os.environ.copy()
                 env["COMP_LINE"] = line
                 env["COMP_POINT"] = str(len(line))
