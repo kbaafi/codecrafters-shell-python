@@ -26,7 +26,8 @@ def make_completer(shell: Shell):
 
         line = readline.get_line_buffer()
         tokens = line.split()
-        is_command = not tokens or (len(tokens) == 1 and not line[-1].isspace())
+        # is_command = not tokens or (len(tokens) == 1 and not line[-1].isspace())
+        is_command = len(tokens) == 1
         sys.stdout.write(f"{' '.join(tokens)}, {len(tokens), text}, {is_command}\n")
         if is_command:
             shell._refresh_executables()
