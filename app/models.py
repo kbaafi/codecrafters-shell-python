@@ -33,11 +33,17 @@ class Result:
     interrupt: Optional[bool] = False
 
 
+class JobOrder(Enum):
+    MOST_RECENT = auto()
+    PREVIOUS_MOST_RECENT = auto()
+    OTHER = auto()
+
+
 @dataclass
 class ProcessInfo:
     program: subprocess.Popen
     parsed_input: ParsedInput
-    most_recent: bool = True
+    job_order: JobOrder
 
 
 class CommandType(Enum):

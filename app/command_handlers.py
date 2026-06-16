@@ -4,7 +4,7 @@ import argparse
 import os
 import subprocess
 
-from .models import CommandType, Result, ShellContext
+from .models import CommandType, JobOrder, Result, ShellContext
 
 
 def exit_handler(ctx: ShellContext, *args):
@@ -66,11 +66,17 @@ def jobs_handler(ctx: ShellContext, *args):
 
     output = []
     for job_id, process_info in ctx.jobs.items():
-        most_recent = "+" if process_info.most_recent else " "
+        job_order = " "
+        if process_info.job_order == JobOrder.MOST_RECENT:
+            job_order = "+"
+        elif process_info.job_order == JobOrder.PREVIOUS_MOST_RECENT:
+            job_order = "-"
+        elif process_info.job_order == JobOrder.OTHER:
+            job_order = " "
         running = "Running" if process_info.program.poll() is None else "       "
         spaces = " " * 17
         command = " ".join(process_info.parsed_input.tokens)
-        status = f"[{job_id}]{most_recent}  {running}{spaces}{command}"
+        status = f"[{job_id}]{job_order}  {running}{spaces}{command}"
         output.append(status)
 
     return Result(value="\n".join(output))
