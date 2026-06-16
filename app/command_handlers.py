@@ -38,6 +38,7 @@ def complete_handler(ctx: ShellContext, *args):
     parser = argparse.ArgumentParser()
     parser.add_argument("-p", dest="print")
     parser.add_argument("-C", dest="completer_script")
+    parser.add_argument("-r", dest="deregiser_completer")
     parsed_args, remaining_args = parser.parse_known_args(args)
 
     if parsed_args.print is not None:
@@ -51,6 +52,9 @@ def complete_handler(ctx: ShellContext, *args):
             )
     elif parsed_args.completer_script is not None and remaining_args:
         ctx.completers[remaining_args[0]] = parsed_args.completer_script
+    elif parsed_args.deregiser_completer is not None:
+        if parsed_args.deregiser_completer in ctx.completers:
+            del ctx.completers[parsed_args.deregiser_completer]
 
     return Result(value=None)
 

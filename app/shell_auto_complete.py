@@ -35,7 +35,6 @@ def make_completer(shell: Shell):
         is_typing_command = len(tokens) == 1 and not line[-1].isspace()
 
         if cmd in shell._ctx.completers:
-            # sys.stdout.write(f"{text=}, {tokens=}")
             previous_text = tokens[-2] if len(tokens) >= 2 else ""
             script = shell._ctx.completers[cmd]
             env = os.environ.copy()
