@@ -1,4 +1,5 @@
 import os
+import subprocess
 import sys
 
 from .command_handlers import (
@@ -80,20 +81,25 @@ class Shell:
         self._known_commands = list(self._ctx.built_ins) + list(self._ctx.executables)
 
     def execute(self, parsed_input: ParsedInput):
-        self._parsed_input = parsed_input
         self._refresh_executables()
-        if parsed_input.command in self._ctx.built_ins:
-            self._ctx.curr_result = self._ctx.built_ins[parsed_input.command](
-                self._ctx, *parsed_input.args
-            )
-        elif parsed_input.command in self._ctx.executables:
-            self._ctx.curr_result = run_executable(
-                parsed_input.command, *parsed_input.args
-            )
+
+        self._parsed_input = parsed_input
+
+        if parsed_input.is_background:
+            subprocess.Popen(parsed_input.tokens[:-1])
         else:
-            self._ctx.curr_result = Result(
-                error=f"{parsed_input.command}: command not found\n"
-            )
+            if parsed_input.command in self._ctx.built_ins:
+                self._ctx.curr_result = self._ctx.built_ins[parsed_input.command](
+                    self._ctx, *parsed_input.args
+                )
+            elif parsed_input.command in self._ctx.executables:
+                self._ctx.curr_result = run_executable(
+                    parsed_input.command, *parsed_input.args
+                )
+            else:
+                self._ctx.curr_result = Result(
+                    error=f"{parsed_input.command}: command not found\n"
+                )
 
     def output_results(self):
         result = self._ctx.curr_result

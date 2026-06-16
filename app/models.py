@@ -20,6 +20,10 @@ class ParsedInput:
     def args(self) -> list[str]:
         return self.tokens[1:] if len(self.tokens) > 1 else []
 
+    @property
+    def is_background(self) -> bool:
+        return self.tokens[-1] == "&" if len(self.tokens) > 0 else False
+
 
 @dataclass
 class Result:
