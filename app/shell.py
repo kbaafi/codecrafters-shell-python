@@ -135,7 +135,9 @@ class Shell:
         elif result.error:
             _to_screen(result.error)
 
-        jobs_handler(self._ctx)
+        result = jobs_handler(self._ctx)
+        if result.value:
+            _to_screen(result.value)
 
     @property
     def known_commands(self):
