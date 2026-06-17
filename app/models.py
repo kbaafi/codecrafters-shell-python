@@ -43,7 +43,6 @@ class JobOrder(Enum):
 class ProcessInfo:
     program: subprocess.Popen
     parsed_input: ParsedInput
-    # job_order: JobOrder
 
 
 class CommandType(Enum):

@@ -87,6 +87,8 @@ class Shell:
         self._refresh_executables()
 
         self._parsed_input = parsed_input
+        if self._ctx.curr_result.value is not None:
+            self._parsed_input.tokens.append(self._ctx.curr_result.value)
 
         if parsed_input.is_background:
             job = subprocess.Popen(parsed_input.tokens[:-1])
@@ -114,6 +116,10 @@ class Shell:
                 self._ctx.curr_result = Result(
                     error=f"{parsed_input.command}: command not found\n"
                 )
+
+    def execute_pipeline(self, command_pipeline: list[ParsedInput]):
+        for parsed_input in command_pipeline:
+            self.execute(parsed_input=parsed_input)
 
     def output_results(self):
         result = self._ctx.curr_result
