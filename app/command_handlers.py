@@ -4,7 +4,7 @@ import argparse
 import os
 import subprocess
 
-from .models import CommandType, JobOrder, ProcessInfo, Result
+from .models import CommandType, Result
 from .shell_context import ShellContext
 
 
@@ -34,8 +34,6 @@ def cd_handler(ctx: ShellContext, *args):
 
 
 def complete_handler(ctx: ShellContext, *args):
-    _ = ctx
-    _ = args
     parser = argparse.ArgumentParser()
     parser.add_argument("-p", dest="print")
     parser.add_argument("-C", dest="completer_script")
@@ -75,18 +73,11 @@ def jobs_handler(ctx: ShellContext, *args):
     _ = args
 
     if len(ctx.jobs) == 0:
-        return Result(value="")
+        return Result(value=None)
 
     output = []
     done_jobs = []
     for job_id, process_info in ctx.jobs.items():
-        # job_order = " "
-        # if process_info.job_order == JobOrder.MOST_RECENT:
-        #     job_order = "+"
-        # elif process_info.job_order == JobOrder.PREVIOUS_MOST_RECENT:
-        #     job_order = "-"
-        # elif process_info.job_order == JobOrder.OTHER:
-        #     job_order = " "
         running = "Running" if process_info.program.poll() is None else "Done"
         spaces = " " * 17
         _tokens = (

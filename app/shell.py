@@ -13,7 +13,7 @@ from .command_handlers import (
     type_handler,
 )
 from .common import ParsedInput
-from .models import JobOrder, ProcessInfo, Result
+from .models import ProcessInfo, Result
 from .shell_context import ShellContext
 
 
@@ -134,6 +134,8 @@ class Shell:
             _to_screen(result.value)
         elif result.error:
             _to_screen(result.error)
+
+        jobs_handler(self._ctx)
 
     @property
     def known_commands(self):
