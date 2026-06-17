@@ -4,7 +4,8 @@ import argparse
 import os
 import subprocess
 
-from .models import CommandType, JobOrder, Result, ShellContext
+from .models import CommandType, JobOrder, ProcessInfo, Result
+from .shell_context import ShellContext
 
 
 def exit_handler(ctx: ShellContext, *args):
@@ -60,20 +61,32 @@ def complete_handler(ctx: ShellContext, *args):
 
 
 def jobs_handler(ctx: ShellContext, *args):
+    def render_job_order_marking(ctx: ShellContext, job_id: int) -> str:
+        job_ids = sorted(ctx.jobs.keys(), reverse=True)
+        most_recent_job_id = job_ids[0] if job_ids else 0
+        second_most_recent_job_id = job_ids[1] if len(job_ids) > 1 else 0
+
+        if job_id == most_recent_job_id:
+            return "+"
+        elif job_id == second_most_recent_job_id:
+            return "-"
+        return " "
+
     _ = args
+
     if len(ctx.jobs) == 0:
         return Result(value="")
 
     output = []
     done_jobs = []
     for job_id, process_info in ctx.jobs.items():
-        job_order = " "
-        if process_info.job_order == JobOrder.MOST_RECENT:
-            job_order = "+"
-        elif process_info.job_order == JobOrder.PREVIOUS_MOST_RECENT:
-            job_order = "-"
-        elif process_info.job_order == JobOrder.OTHER:
-            job_order = " "
+        # job_order = " "
+        # if process_info.job_order == JobOrder.MOST_RECENT:
+        #     job_order = "+"
+        # elif process_info.job_order == JobOrder.PREVIOUS_MOST_RECENT:
+        #     job_order = "-"
+        # elif process_info.job_order == JobOrder.OTHER:
+        #     job_order = " "
         running = "Running" if process_info.program.poll() is None else "Done"
         spaces = " " * 17
         _tokens = (
@@ -81,6 +94,7 @@ def jobs_handler(ctx: ShellContext, *args):
             if process_info.program.poll() is None
             else process_info.parsed_input.tokens[:-1]
         )
+        job_order = render_job_order_marking(ctx=ctx, job_id=job_id)
         command = " ".join(_tokens)
         status = f"[{job_id}]{job_order}  {running}{spaces}{command}"
         output.append(status)

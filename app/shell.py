@@ -13,7 +13,8 @@ from .command_handlers import (
     type_handler,
 )
 from .common import ParsedInput
-from .models import JobOrder, ProcessInfo, Result, ShellContext
+from .models import JobOrder, ProcessInfo, Result
+from .shell_context import ShellContext
 
 
 def get_executables() -> dict[str, str]:
@@ -88,15 +89,12 @@ class Shell:
 
         if parsed_input.is_background:
             job = subprocess.Popen(parsed_input.tokens[:-1])
-            current_max_job_id = len(self._ctx.jobs)
-            for process_info in self._ctx.jobs.values():
-                if process_info.job_order == JobOrder.MOST_RECENT:
-                    process_info.job_order = JobOrder.PREVIOUS_MOST_RECENT
-                elif process_info.job_order == JobOrder.PREVIOUS_MOST_RECENT:
-                    process_info.job_order = JobOrder.OTHER
+            current_max_job_id = (
+                max(self._ctx.jobs.keys()) if len(self._ctx.jobs) > 0 else 0
+            )
 
             self._ctx.jobs[current_max_job_id + 1] = ProcessInfo(
-                program=job, parsed_input=parsed_input, job_order=JobOrder.MOST_RECENT
+                program=job, parsed_input=parsed_input
             )
 
             self._ctx.curr_result = Result(
