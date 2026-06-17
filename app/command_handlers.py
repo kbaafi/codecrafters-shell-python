@@ -132,7 +132,7 @@ def history_handler(ctx: ShellContext, *args):
     for i, prompt in enumerate(ctx.history):
         result.append(f"\t{i+1} {prompt}")
 
-    limited_result = result[-limit:] if limit else result
+    limited_result = result[(0 - abs(limit)) :] if limit else result
     return (
         Result(value="\n".join(limited_result))
         if len(limited_result) > 0
