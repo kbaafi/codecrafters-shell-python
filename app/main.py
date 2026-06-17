@@ -22,20 +22,7 @@ def main():
         if len(user_input) == 0 or not user_input:
             continue
 
-        pipeline_tokens = user_input.split(sep="|")
-        parsed_inputs: list[ParsedInput] = [
-            tokenize_user_input(i) for i in pipeline_tokens
-        ]
-
-        if len(parsed_inputs) == 0:
-            continue
-        elif len(parsed_inputs) == 1:
-            parsed_input = parsed_inputs[0]
-            if parsed_input.command == "":
-                continue
-            shell.execute(parsed_input)
-        else:
-            shell.execute_pipeline(parsed_inputs)
+        shell.handle_prompt(user_input=user_input)
 
         # Handle results
         if shell._ctx.curr_result.interrupt:

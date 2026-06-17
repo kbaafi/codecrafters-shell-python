@@ -14,7 +14,7 @@ from .command_handlers import (
     run_executable,
     type_handler,
 )
-from .common import ParsedInput
+from .common import ParsedInput, tokenize_user_input
 from .models import ProcessInfo, Result
 from .shell_context import ShellContext
 
@@ -84,6 +84,23 @@ class Shell:
     def _refresh_executables(self):
         self._ctx.executables = get_executables()
         self._known_commands = list(self._ctx.built_ins) + list(self._ctx.executables)
+
+    def handle_prompt(self, user_input: str):
+        pipeline_tokens = user_input.split(sep="|")
+        parsed_inputs: list[ParsedInput] = [
+            tokenize_user_input(i) for i in pipeline_tokens
+        ]
+
+        if len(parsed_inputs) == 0:
+            return Result()
+        elif len(parsed_inputs) == 1:
+            parsed_input = parsed_inputs[0]
+            if parsed_input.command == "":
+                return Result()
+            self.execute(parsed_input)
+        else:
+            self.execute_pipeline(parsed_inputs)
+        self._ctx.history.append(user_input)
 
     def execute(self, parsed_input: ParsedInput, stdin: str | None = None):
         self._refresh_executables()
