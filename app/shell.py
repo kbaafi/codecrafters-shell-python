@@ -86,6 +86,7 @@ class Shell:
         self._known_commands = list(self._ctx.built_ins) + list(self._ctx.executables)
 
     def handle_prompt(self, user_input: str):
+        self._ctx.history.append(user_input)
         pipeline_tokens = user_input.split(sep="|")
         parsed_inputs: list[ParsedInput] = [
             tokenize_user_input(i) for i in pipeline_tokens
@@ -100,7 +101,6 @@ class Shell:
             self.execute(parsed_input)
         else:
             self.execute_pipeline(parsed_inputs)
-        self._ctx.history.append(user_input)
 
     def execute(self, parsed_input: ParsedInput, stdin: str | None = None):
         self._refresh_executables()
