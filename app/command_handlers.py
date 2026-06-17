@@ -129,7 +129,7 @@ def type_handler(ctx: ShellContext, *args):
 def history_handler(ctx: ShellContext, *args):
     result = []
     for i, prompt in enumerate(ctx.history):
-        result.append(f"\t{i} {prompt}")
+        result.append(f"\t{i+1} {prompt}")
     return Result(value="\n".join(result)) if len(result) > 0 else Result(value=None)
 
 
