@@ -127,10 +127,17 @@ def type_handler(ctx: ShellContext, *args):
 
 
 def history_handler(ctx: ShellContext, *args):
+    limit = args[0] if len(args) > 0 else None
     result = []
     for i, prompt in enumerate(ctx.history):
         result.append(f"\t{i+1} {prompt}")
-    return Result(value="\n".join(result)) if len(result) > 0 else Result(value=None)
+
+    limited_result = result[-limit:] if limit else result
+    return (
+        Result(value="\n".join(limited_result))
+        if len(limited_result) > 0
+        else Result(value=None)
+    )
 
 
 def pwd_handler(ctx: ShellContext, *args):
