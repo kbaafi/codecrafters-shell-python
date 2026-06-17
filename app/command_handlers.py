@@ -58,34 +58,38 @@ def complete_handler(ctx: ShellContext, *args):
     return Result(value=None)
 
 
-def jobs_handler(ctx: ShellContext, *args):
-    def render_job_order_marking(ctx: ShellContext, job_id: int) -> str:
-        job_ids = sorted(ctx.jobs.keys(), reverse=True)
-        most_recent_job_id = job_ids[0] if job_ids else 0
-        second_most_recent_job_id = job_ids[1] if len(job_ids) > 1 else 0
+def _render_job_order_marking(ctx: ShellContext, job_id: int) -> str:
+    job_ids = sorted(ctx.jobs.keys(), reverse=True)
+    most_recent_job_id = job_ids[0] if job_ids else 0
+    second_most_recent_job_id = job_ids[1] if len(job_ids) > 1 else 0
 
-        if job_id == most_recent_job_id:
-            return "+"
-        elif job_id == second_most_recent_job_id:
-            return "-"
-        return " "
+    if job_id == most_recent_job_id:
+        return "+"
+    elif job_id == second_most_recent_job_id:
+        return "-"
+    return " "
 
-    _ = args
 
+def _render_job_statuses(ctx: ShellContext, show_only_done=False) -> list[str]:
     if len(ctx.jobs) == 0:
-        return Result(value=None)
+        return []
 
-    output = []
+    output: list[str] = []
     done_jobs = []
     for job_id, process_info in ctx.jobs.items():
-        running = "Running" if process_info.program.poll() is None else "Done"
+        running_state = True if process_info.program.poll() is None else False
+
+        if show_only_done and running_state:
+            continue
+
+        running = "Running" if running_state else "Done"
         spaces = " " * 17
         _tokens = (
             process_info.parsed_input.tokens
             if process_info.program.poll() is None
             else process_info.parsed_input.tokens[:-1]
         )
-        job_order = render_job_order_marking(ctx=ctx, job_id=job_id)
+        job_order = _render_job_order_marking(ctx=ctx, job_id=job_id)
         command = " ".join(_tokens)
         status = f"[{job_id}]{job_order}  {running}{spaces}{command}"
         output.append(status)
@@ -94,8 +98,19 @@ def jobs_handler(ctx: ShellContext, *args):
 
     for job_id in done_jobs:
         del ctx.jobs[job_id]
+    return output
 
-    return Result(value="\n".join(output))
+
+def jobs_handler(ctx: ShellContext, *args):
+    _ = args
+
+    result = _render_job_statuses(ctx)
+    return Result(value="\n".join(result)) if len(result) > 0 else Result(value=None)
+
+
+def render_completed_jobs(ctx: ShellContext):
+    result = _render_job_statuses(ctx, show_only_done=True)
+    return Result(value="\n".join(result)) if len(result) > 0 else Result(value=None)
 
 
 def type_handler(ctx: ShellContext, *args):

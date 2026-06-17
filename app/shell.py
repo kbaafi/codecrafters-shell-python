@@ -9,6 +9,7 @@ from .command_handlers import (
     exit_handler,
     jobs_handler,
     pwd_handler,
+    render_completed_jobs,
     run_executable,
     type_handler,
 )
@@ -135,9 +136,9 @@ class Shell:
         elif result.error:
             _to_screen(result.error)
 
-        result = jobs_handler(self._ctx)
-        # if result.value:
-        #     _to_screen(result.value)
+        result = render_completed_jobs(self._ctx)
+        if result.value:
+            _to_screen(result.value)
 
     @property
     def known_commands(self):
