@@ -121,22 +121,55 @@ class Shell:
             return
 
         procs: list[subprocess.Popen] = []
-        prev_stdout = None
+        prev_stdout = None  # file object from previous Popen's stdout
+        pending_input: str | None = None  # string output from a built-in stage
 
         for i, parsed_input in enumerate(command_pipeline):
             is_last = i == len(command_pipeline) - 1
-            cmd = [parsed_input.command, *parsed_input.args]
-            proc = subprocess.Popen(
-                cmd,
-                stdin=prev_stdout,
-                stdout=None if is_last else subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True,
-            )
-            if prev_stdout is not None:
-                prev_stdout.close()
-            prev_stdout = proc.stdout
-            procs.append(proc)
+
+            if parsed_input.command in self._ctx.built_ins:
+                # drain any pipe from a previous external process
+                if prev_stdout is not None:
+                    pending_input = prev_stdout.read()
+                    prev_stdout.close()
+                    prev_stdout = None
+                result = self._ctx.built_ins[parsed_input.command](
+                    self._ctx, *parsed_input.args
+                )
+                pending_input = result.value or ""
+                if is_last:
+                    self._parsed_input = parsed_input
+                    self._ctx.curr_result = result
+                    for proc in procs:
+                        proc.wait()
+                    return
+            else:
+                cmd = [parsed_input.command, *parsed_input.args]
+                if pending_input is not None:
+                    # previous stage was a built-in: feed its output via stdin pipe
+                    proc = subprocess.Popen(
+                        cmd,
+                        stdin=subprocess.PIPE,
+                        stdout=None if is_last else subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                        text=True,
+                    )
+                    assert proc.stdin is not None
+                    proc.stdin.write(pending_input)
+                    proc.stdin.close()
+                    pending_input = None
+                else:
+                    proc = subprocess.Popen(
+                        cmd,
+                        stdin=prev_stdout,
+                        stdout=None if is_last else subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                        text=True,
+                    )
+                    if prev_stdout is not None:
+                        prev_stdout.close()
+                prev_stdout = proc.stdout
+                procs.append(proc)
 
         stdout, stderr = procs[-1].communicate()
         for proc in procs[:-1]:
