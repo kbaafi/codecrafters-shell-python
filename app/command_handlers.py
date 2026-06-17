@@ -126,6 +126,10 @@ def type_handler(ctx: ShellContext, *args):
             return Result(value=f"{command}: not found")
 
 
+def history_handler(ctx: ShellContext, *args):
+    return Result()
+
+
 def pwd_handler(ctx: ShellContext, *args):
     return Result(value=ctx.cwd)
 

@@ -7,6 +7,7 @@ from .command_handlers import (
     complete_handler,
     echo_handler,
     exit_handler,
+    history_handler,
     jobs_handler,
     pwd_handler,
     render_completed_jobs,
@@ -47,6 +48,7 @@ def _default_built_ins():
         "cd": cd_handler,
         "complete": complete_handler,
         "jobs": jobs_handler,
+        "history": history_handler,
     }
 
 
