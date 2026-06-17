@@ -16,7 +16,7 @@ def exit_handler(ctx: ShellContext, *args):
 
 def echo_handler(ctx: ShellContext, *args):
     _ = ctx
-    return Result(value=" ".join(args))
+    return Result(value=" ".join(args) + "\n")
 
 
 def cd_handler(ctx: ShellContext, *args):
