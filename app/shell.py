@@ -119,6 +119,7 @@ class Shell:
 
     def execute_pipeline(self, command_pipeline: list[ParsedInput]):
         for parsed_input in command_pipeline:
+            print(parsed_input.tokens)
             self.execute(parsed_input=parsed_input)
 
     def output_results(self):
