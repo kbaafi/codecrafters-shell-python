@@ -116,10 +116,34 @@ class Shell:
                 )
 
     def execute_pipeline(self, command_pipeline: list[ParsedInput]):
-        for parsed_input in command_pipeline:
-            stdin = self._ctx.curr_result.value
-            self._ctx.curr_result = Result(value=None, error=None)
-            self.execute(parsed_input=parsed_input, stdin=stdin)
+        if len(command_pipeline) == 1:
+            self.execute(parsed_input=command_pipeline[0])
+            return
+
+        procs: list[subprocess.Popen] = []
+        prev_stdout = None
+
+        for i, parsed_input in enumerate(command_pipeline):
+            is_last = i == len(command_pipeline) - 1
+            cmd = [parsed_input.command, *parsed_input.args]
+            proc = subprocess.Popen(
+                cmd,
+                stdin=prev_stdout,
+                stdout=None if is_last else subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
+            if prev_stdout is not None:
+                prev_stdout.close()
+            prev_stdout = proc.stdout
+            procs.append(proc)
+
+        stdout, stderr = procs[-1].communicate()
+        for proc in procs[:-1]:
+            proc.wait()
+
+        self._parsed_input = command_pipeline[-1]
+        self._ctx.curr_result = Result(value=stdout, error=stderr)
 
     def output_results(self):
         result = self._ctx.curr_result
