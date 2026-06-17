@@ -83,13 +83,10 @@ class Shell:
         self._ctx.executables = get_executables()
         self._known_commands = list(self._ctx.built_ins) + list(self._ctx.executables)
 
-    def execute(self, parsed_input: ParsedInput):
+    def execute(self, parsed_input: ParsedInput, stdin: str | None = None):
         self._refresh_executables()
 
         self._parsed_input = parsed_input
-        if self._ctx.curr_result.value:
-            self._parsed_input.tokens.append(self._ctx.curr_result.value)
-        print(self._parsed_input.tokens)
 
         if parsed_input.is_background:
             job = subprocess.Popen(parsed_input.tokens[:-1])
@@ -111,7 +108,7 @@ class Shell:
                 )
             elif parsed_input.command in self._ctx.executables:
                 self._ctx.curr_result = run_executable(
-                    parsed_input.command, *parsed_input.args
+                    parsed_input.command, *parsed_input.args, stdin=stdin
                 )
             else:
                 self._ctx.curr_result = Result(
@@ -120,7 +117,9 @@ class Shell:
 
     def execute_pipeline(self, command_pipeline: list[ParsedInput]):
         for parsed_input in command_pipeline:
-            self.execute(parsed_input=parsed_input)
+            stdin = self._ctx.curr_result.value
+            self._ctx.curr_result = Result(value=None, error=None)
+            self.execute(parsed_input=parsed_input, stdin=stdin)
 
     def output_results(self):
         result = self._ctx.curr_result

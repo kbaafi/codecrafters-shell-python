@@ -130,6 +130,8 @@ def pwd_handler(ctx: ShellContext, *args):
     return Result(value=ctx.cwd)
 
 
-def run_executable(command: str, *args):
-    result = subprocess.run([command, *args], capture_output=True, text=True)
+def run_executable(command: str, *args, stdin: str | None = None):
+    result = subprocess.run(
+        [command, *args], capture_output=True, text=True, input=stdin
+    )
     return Result(value=result.stdout, error=result.stderr)
