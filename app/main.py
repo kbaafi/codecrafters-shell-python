@@ -36,6 +36,9 @@ def main():
         else:
             shell.output_results()
 
+    if history_file:
+        history_handler(shell._ctx, "-w", history_file)
+
 
 if __name__ == "__main__":
     main()
