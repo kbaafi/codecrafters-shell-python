@@ -131,22 +131,28 @@ def history_handler(ctx: ShellContext, *args):
     parser.add_argument("-r", dest="read_history_file")
     parsed_args, remaining_args = parser.parse_known_args(args)
 
-    limit = (
-        int(remaining_args[0])
-        if len(remaining_args) > 0 and not hasattr(parsed_args, "read_history_file")
-        else 0
-    )
-    print(f"{limit=}, {parsed_args=}")
-    result = []
-    for i, prompt in enumerate(ctx.history):
-        result.append(f"\t{i+1} {prompt}")
+    if hasattr(parsed_args, "read_history_file"):
+        with open(parsed_args.read_history_file, "r") as _file:
+            lines = [line.strip() for line in _file]
+            for line in lines:
+                ctx.history.append(line)
+        return Result()  # empty result
+    else:
+        limit = (
+            int(remaining_args[0])
+            if len(remaining_args) > 0 and not hasattr(parsed_args, "read_history_file")
+            else 0
+        )
+        result = []
+        for i, prompt in enumerate(ctx.history):
+            result.append(f"\t{i+1} {prompt}")
 
-    limited_result = result[(0 - abs(limit)) :] if limit else result
-    return (
-        Result(value="\n".join(limited_result))
-        if len(limited_result) > 0
-        else Result(value=None)
-    )
+        limited_result = result[(0 - abs(limit)) :] if limit else result
+        return (
+            Result(value="\n".join(limited_result))
+            if len(limited_result) > 0
+            else Result(value=None)
+        )
 
 
 def pwd_handler(ctx: ShellContext, *args):
