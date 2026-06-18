@@ -131,13 +131,15 @@ def history_handler(ctx: ShellContext, *args):
     parser.add_argument("-r", dest="read_history_file")
     parser.add_argument("-w", dest="write_history_file")
     parser.add_argument("-a", dest="append_to_history_file")
+
     parsed_args, remaining_args = parser.parse_known_args(args)
 
     if parsed_args.read_history_file is not None:
         with open(parsed_args.read_history_file, "r") as _file:
             lines = [line.strip() for line in _file if line.strip()]
-            for line in reversed(lines):
-                ctx.history.appendleft(line)
+            for line in lines:
+                if line not in ctx.history:
+                    ctx.history.appendleft(line)
         return Result()  # empty result
     elif parsed_args.append_to_history_file is not None:
         with open(parsed_args.append_to_history_file, "a") as _file:
