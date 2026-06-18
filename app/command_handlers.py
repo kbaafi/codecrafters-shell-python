@@ -122,7 +122,7 @@ def declare_var_handler(ctx: ShellContext, *args):
             return Result(value=f"declare: {parsed_args.print}: not found")
         else:
             return Result(
-                value=f"declare -- {parsed_args.print}={ctx.variables[parsed_args.print]}"
+                value=f'declare -- {parsed_args.print}="{ctx.variables[parsed_args.print]}"'
             )
     else:
         tokens = str(remaining_args[0]).split("=")
