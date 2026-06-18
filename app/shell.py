@@ -86,7 +86,8 @@ class Shell:
         self._known_commands = list(self._ctx.built_ins) + list(self._ctx.executables)
 
     def handle_prompt(self, user_input: str):
-        self._ctx.history.append(user_input)
+        self._ctx.full_history.append(user_input)
+        self._ctx.curr_history.append(user_input)
         pipeline_tokens = user_input.split(sep="|")
         parsed_inputs: list[ParsedInput] = [
             tokenize_user_input(i) for i in pipeline_tokens

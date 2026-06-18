@@ -138,23 +138,26 @@ def history_handler(ctx: ShellContext, *args):
         with open(parsed_args.read_history_file, "r") as _file:
             lines = [line.strip() for line in _file if line.strip()]
             for line in lines:
-                if line not in ctx.history:
-                    ctx.history.appendleft(line)
-        return Result()  # empty result
+                # if line not in ctx.full_history:
+                ctx.full_history.append(line)
+        return Result()
+
     elif parsed_args.append_to_history_file is not None:
         with open(parsed_args.append_to_history_file, "a") as _file:
-            for line in ctx.history:
+            for line in ctx.curr_history:
                 _file.write(line + "\n")
+        ctx.curr_history.clear()
         return Result()
+
     elif parsed_args.write_history_file is not None:
         with open(parsed_args.write_history_file, "w") as _file:
-            for line in ctx.history:
+            for line in ctx.full_history:
                 _file.write(line + "\n")
         return Result()
     else:
         limit = int(remaining_args[0]) if len(remaining_args) > 0 else 0
         result = []
-        for i, prompt in enumerate(ctx.history):
+        for i, prompt in enumerate(ctx.full_history):
             result.append(f"\t{i+1} {prompt}")
 
         limited_result = result[(0 - abs(limit)) :] if limit else result

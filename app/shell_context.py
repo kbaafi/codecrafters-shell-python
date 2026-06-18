@@ -13,7 +13,8 @@ class ShellContext:
     cwd: str = field(default_factory=os.getcwd)
     completers: dict[str, str] = field(default_factory=dict)
     jobs: dict[int, ProcessInfo] = field(default_factory=dict)
-    history: deque = field(default_factory=deque)
+    full_history: deque = field(default_factory=deque)
+    curr_history: deque = field(default_factory=deque)
 
     def resolve_command(self, command: str) -> tuple[CommandType, str | None]:
         if command in self.built_ins:
