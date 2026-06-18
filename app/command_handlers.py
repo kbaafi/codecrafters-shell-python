@@ -132,17 +132,14 @@ def history_handler(ctx: ShellContext, *args):
     parsed_args, remaining_args = parser.parse_known_args(args)
 
     if hasattr(parsed_args, "read_history_file"):
+        print(parsed_args, parsed_args.read_history_file)
         with open(parsed_args.read_history_file, "r") as _file:
             lines = [line.strip() for line in _file]
             for line in lines:
                 ctx.history.append(line)
         return Result()  # empty result
     else:
-        limit = (
-            int(remaining_args[0])
-            if len(remaining_args) > 0 and not hasattr(parsed_args, "read_history_file")
-            else 0
-        )
+        limit = int(remaining_args[0]) if len(remaining_args) > 0 else 0
         result = []
         for i, prompt in enumerate(ctx.history):
             result.append(f"\t{i+1} {prompt}")
