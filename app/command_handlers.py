@@ -132,7 +132,6 @@ def history_handler(ctx: ShellContext, *args):
     parsed_args, remaining_args = parser.parse_known_args(args)
 
     if hasattr(parsed_args, "read_history_file"):
-        print(parsed_args, parsed_args.read_history_file)
         with open(parsed_args.read_history_file, "r") as _file:
             lines = [line.strip() for line in _file]
             for line in lines:
