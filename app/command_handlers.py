@@ -138,7 +138,6 @@ def history_handler(ctx: ShellContext, *args):
         with open(parsed_args.read_history_file, "r") as _file:
             lines = [line.strip() for line in _file if line.strip()]
             for line in lines:
-                # if line not in ctx.full_history:
                 ctx.full_history.append(line)
         return Result()
 

@@ -3,6 +3,7 @@ import readline
 import sys
 from pathlib import Path
 
+from .command_handlers import history_handler
 from .common import PROMPT, ParsedInput, tokenize_user_input
 from .shell import Shell
 from .shell_auto_complete import make_completer
@@ -16,6 +17,11 @@ def main():
     readline.parse_and_bind("tab: complete")
     readline.parse_and_bind("set bell-style audible")
     readline.parse_and_bind("set show-all-if-ambiguous off")
+
+    history_file = os.environ.get("HISTFILE", None)
+
+    if history_file:
+        history_handler(shell._ctx, "-r", history_file)
 
     while True:
         user_input = input(f"{PROMPT}")
