@@ -120,6 +120,10 @@ def declare_var_handler(ctx: ShellContext, *args):
     if parsed_args.print is not None:
         if parsed_args.print not in ctx.variables:
             return Result(value=f"declare: {parsed_args.print}: not found")
+        else:
+            return Result(
+                value=f"declare -- {parsed_args.print}={ctx.variables[parsed_args.print]}"
+            )
     return Result()
 
 
