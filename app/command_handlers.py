@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import re
 import subprocess
 
 from .models import CommandType, Result
@@ -128,6 +129,10 @@ def declare_var_handler(ctx: ShellContext, *args):
         tokens = str(remaining_args[0]).split("=")
         if len(tokens) > 1:
             var, value = tokens[0], tokens[1]
+            if not re.match(r"^[_a-zA-Z]", var):
+                return Result(
+                    error=f"declare: `{var}={value}`: not a valid identifier\n"
+                )
             ctx.variables[var] = value
         return Result()
     return Result()
