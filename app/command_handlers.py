@@ -127,7 +127,16 @@ def type_handler(ctx: ShellContext, *args):
 
 
 def history_handler(ctx: ShellContext, *args):
-    limit = int(args[0]) if len(args) > 0 else 0
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-r", dest="read_history_file")
+    parsed_args, remaining_args = parser.parse_known_args(args)
+
+    limit = (
+        int(remaining_args[0])
+        if len(remaining_args) > 0 and not hasattr(parsed_args, "read_history_file")
+        else 0
+    )
+    print(f"{limit=}, {parsed_args=}")
     result = []
     for i, prompt in enumerate(ctx.history):
         result.append(f"\t{i+1} {prompt}")
