@@ -129,6 +129,7 @@ def type_handler(ctx: ShellContext, *args):
 def history_handler(ctx: ShellContext, *args):
     parser = argparse.ArgumentParser()
     parser.add_argument("-r", dest="read_history_file")
+    parser.add_argument("-w", dest="write_history_file")
     parsed_args, remaining_args = parser.parse_known_args(args)
 
     if parsed_args.read_history_file is not None:
@@ -137,6 +138,11 @@ def history_handler(ctx: ShellContext, *args):
             for line in lines:
                 ctx.history.append(line)
         return Result()  # empty result
+    elif parsed_args.write_history_file is not None:
+        with open(parsed_args.write_history_file, "w") as _file:
+            for line in ctx.history:
+                _file.write(line + "\n")
+        return Result()
     else:
         limit = int(remaining_args[0]) if len(remaining_args) > 0 else 0
         result = []
