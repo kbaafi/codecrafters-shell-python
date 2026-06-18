@@ -124,6 +124,12 @@ def declare_var_handler(ctx: ShellContext, *args):
             return Result(
                 value=f"declare -- {parsed_args.print}={ctx.variables[parsed_args.print]}"
             )
+    else:
+        tokens = str(remaining_args[0]).split("=")
+        if len(tokens) > 1:
+            var, value = tokens[0], tokens[1]
+            ctx.variables[var] = value
+        return Result()
     return Result()
 
 
