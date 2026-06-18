@@ -129,7 +129,7 @@ def declare_var_handler(ctx: ShellContext, *args):
         tokens = str(remaining_args[0]).split("=")
         if len(tokens) > 1:
             var, value = tokens[0], tokens[1]
-            if not re.match(r"^[_a-zA-Z]", var):
+            if not re.match(r"^[_a-zA-Z][_a-zA-Z0-9]*$", var):
                 return Result(
                     error=f"declare: `{var}={value}': not a valid identifier\n"
                 )
