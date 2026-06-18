@@ -113,6 +113,10 @@ def render_completed_jobs(ctx: ShellContext):
     return Result(value="\n".join(result)) if len(result) > 0 else Result(value=None)
 
 
+def declare_var_handler(ctx: ShellContext):
+    return Result()
+
+
 def type_handler(ctx: ShellContext, *args):
     command = args[0]
     command_type, path = ctx.resolve_command(command=command)

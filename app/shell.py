@@ -5,6 +5,7 @@ import sys
 from .command_handlers import (
     cd_handler,
     complete_handler,
+    declare_var_handler,
     echo_handler,
     exit_handler,
     history_handler,
@@ -49,6 +50,7 @@ def _default_built_ins():
         "complete": complete_handler,
         "jobs": jobs_handler,
         "history": history_handler,
+        "declare": declare_var_handler,
     }
 
 
