@@ -131,7 +131,7 @@ def declare_var_handler(ctx: ShellContext, *args):
             var, value = tokens[0], tokens[1]
             if not re.match(r"^[_a-zA-Z]", var):
                 return Result(
-                    error=f"declare: `{var}={value}`: not a valid identifier\n"
+                    error=f"declare: '{var}={value}': not a valid identifier\n"
                 )
             ctx.variables[var] = value
         return Result()
