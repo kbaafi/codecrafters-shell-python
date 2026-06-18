@@ -113,7 +113,13 @@ def render_completed_jobs(ctx: ShellContext):
     return Result(value="\n".join(result)) if len(result) > 0 else Result(value=None)
 
 
-def declare_var_handler(ctx: ShellContext):
+def declare_var_handler(ctx: ShellContext, *args):
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-p", dest="print")
+    parsed_args, remaining_args = parser.parse_known_args(args)
+    if parsed_args.print is not None:
+        if parsed_args.print not in ctx.variables:
+            return Result(value=f"declare: {parsed_args.print}: not found")
     return Result()
 
 

@@ -15,6 +15,7 @@ class ShellContext:
     jobs: dict[int, ProcessInfo] = field(default_factory=dict)
     full_history: deque = field(default_factory=deque)
     curr_history: deque = field(default_factory=deque)
+    variables: dict[str, str] = field(default_factory=dict)
 
     def resolve_command(self, command: str) -> tuple[CommandType, str | None]:
         if command in self.built_ins:
