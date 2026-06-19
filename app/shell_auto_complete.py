@@ -31,8 +31,8 @@ def make_completer(shell: Shell):
         line = readline.get_line_buffer()
         tokens = line.split()
         shell._refresh_executables()
-        cmd = tokens[0] if len(tokens) > 0 else ""
-        is_typing_command = len(tokens) == 1 and not line[-1].isspace()
+        cmd = tokens[0] if tokens else ""
+        is_typing_command = not line or (len(tokens) == 1 and not line[-1].isspace())
 
         if cmd in shell._ctx.completers:
             previous_text = tokens[-2] if len(tokens) >= 2 else ""
@@ -47,14 +47,22 @@ def make_completer(shell: Shell):
                     text=True,
                     env=env,
                 )
-                options = [f"{l} " for l in result.stdout.splitlines() if l]
+                options = [f"{line} " for line in result.stdout.splitlines()]
             except OSError:
                 options = []
         elif is_typing_command:
             options = [f"{c} " for c in shell.known_commands if c.startswith(text)]
         else:
-            base_dir, partial_file = text.rsplit("/", 1) if "/" in text else ("", text)
-            text_prefix = text[: len(text) - len(partial_file)]
+            # when text is empty, the last token in the line is the base path
+            effective = (
+                text
+                if text
+                else (tokens[-1] if tokens and tokens[-1].endswith("/") else text)
+            )
+            base_dir, partial_file = (
+                effective.rsplit("/", 1) if "/" in effective else ("", effective)
+            )
+            text_prefix = effective[: len(effective) - len(partial_file)]
             try:
                 options = build_file_system_matches(
                     base_dir, partial_file, shell._ctx.cwd, text_prefix

@@ -198,7 +198,7 @@ def test_completes_relative_path_trailing_slash(tmp_path):
     partial = "apple/raspberry/"
     with patch("readline.get_line_buffer", return_value=f"wc {partial}"):
         matches = complete_all(completer, "")
-    assert "mango.txt " in matches
+    assert "apple/raspberry/mango.txt " in matches
 
 
 def test_invalid_path_returns_empty():

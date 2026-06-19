@@ -2,7 +2,7 @@ from app.common import tokenize_user_input
 
 
 def parsed(s):
-    return tokenize_user_input(s)
+    return tokenize_user_input(s, {})
 
 
 def test_simple_args():
@@ -118,3 +118,18 @@ def test_stderr_append():
     assert p.tokens == ["echo", "hello"]
     assert p.stderr_redirect == "err.txt"
     assert p.stderr_append is True
+
+
+def test_variable_expansion():
+    p = tokenize_user_input("echo $NAME", {"NAME": "world"})
+    assert p.tokens == ["echo", "world"]
+
+
+def test_variable_expansion_braces():
+    p = tokenize_user_input("echo ${NAME}", {"NAME": "world"})
+    assert p.tokens == ["echo", "world"]
+
+
+def test_unset_variable_expands_to_empty():
+    p = tokenize_user_input("echo $UNSET", {})
+    assert p.tokens == ["echo"]

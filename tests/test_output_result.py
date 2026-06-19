@@ -1,5 +1,10 @@
 from app.models import ParsedInput, Result
-from app.shell import Shell
+from app.shell import output_results
+from app.shell_context import ShellContext
+
+
+def make_ctx():
+    return ShellContext(cwd="/tmp", built_ins={}, executables={})
 
 
 def run(
@@ -9,15 +14,13 @@ def run(
     stdout_append=False,
     stderr_append=False,
 ):
-    shell = Shell()
-    shell._ctx.curr_result = result
-    shell._parsed_input = ParsedInput(
+    parsed_input = ParsedInput(
         stdout_redirect=stdout_redirect,
         stderr_redirect=stderr_redirect,
         stdout_append=stdout_append,
         stderr_append=stderr_append,
     )
-    shell.output_results()
+    output_results(make_ctx(), result, parsed_input)
 
 
 def test_value_printed_to_stdout(capsys):

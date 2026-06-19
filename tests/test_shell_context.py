@@ -25,14 +25,14 @@ def test_executables_populated():
 
 def test_execute_builtin_echo():
     shell = Shell()
-    shell.execute(ParsedInput(tokens=["echo", "hello", "world"]))
-    assert shell._ctx.curr_result.value == "hello world"
+    result = shell.execute(ParsedInput(tokens=["echo", "hello", "world"]))
+    assert result.value == "hello world\n"
 
 
 def test_execute_builtin_pwd():
     shell = Shell()
-    shell.execute(ParsedInput(tokens=["pwd"]))
-    assert shell._ctx.curr_result.value == shell._ctx.cwd
+    result = shell.execute(ParsedInput(tokens=["pwd"]))
+    assert result.value == shell._ctx.cwd
 
 
 def test_execute_builtin_cd(tmp_path):
@@ -43,22 +43,22 @@ def test_execute_builtin_cd(tmp_path):
 
 def test_execute_cd_invalid_path():
     shell = Shell()
-    shell.execute(ParsedInput(tokens=["cd", "/nonexistent/path/xyz"]))
-    assert shell._ctx.curr_result.value is not None
-    assert "No such file or directory" in shell._ctx.curr_result.value
+    result = shell.execute(ParsedInput(tokens=["cd", "/nonexistent/path/xyz"]))
+    assert result.value is not None
+    assert "No such file or directory" in result.value
 
 
 def test_execute_exit():
     shell = Shell()
-    shell.execute(ParsedInput(tokens=["exit"]))
-    assert shell._ctx.curr_result.interrupt is True
+    result = shell.execute(ParsedInput(tokens=["exit"]))
+    assert result.interrupt is True
 
 
 def test_execute_unknown_command():
     shell = Shell()
-    shell.execute(ParsedInput(tokens=["notarealcommand"]))
-    assert shell._ctx.curr_result.error is not None
-    assert "command not found" in shell._ctx.curr_result.error
+    result = shell.execute(ParsedInput(tokens=["notarealcommand"]))
+    assert result.error is not None
+    assert "command not found" in result.error
 
 
 def test_resolve_command_builtin():
@@ -84,22 +84,22 @@ def test_resolve_command_invalid():
 
 def test_type_handler_builtin():
     shell = Shell()
-    shell.execute(ParsedInput(tokens=["type", "echo"]))
-    assert shell._ctx.curr_result.value == "echo is a shell builtin"
+    result = shell.execute(ParsedInput(tokens=["type", "echo"]))
+    assert result.value == "echo is a shell builtin"
 
 
 def test_type_handler_executable():
     shell = Shell()
-    shell.execute(ParsedInput(tokens=["type", "ls"]))
-    assert shell._ctx.curr_result.value is not None
-    assert "ls is" in shell._ctx.curr_result.value
+    result = shell.execute(ParsedInput(tokens=["type", "ls"]))
+    assert result.value is not None
+    assert "ls is" in result.value
 
 
 def test_type_handler_invalid():
     shell = Shell()
-    shell.execute(ParsedInput(tokens=["type", "notarealcommand"]))
-    assert shell._ctx.curr_result.value is not None
-    assert "not found" in shell._ctx.curr_result.value
+    result = shell.execute(ParsedInput(tokens=["type", "notarealcommand"]))
+    assert result.value is not None
+    assert "not found" in result.value
 
 
 def test_known_commands_includes_builtins():
@@ -111,3 +111,13 @@ def test_known_commands_includes_builtins():
 def test_known_commands_includes_executables():
     shell = Shell()
     assert "ls" in shell.known_commands
+
+
+def test_register_builtin():
+    shell = Shell()
+    from app.models import Result
+
+    shell.register_builtin("greet", lambda ctx, *args: Result(value="hi"))
+    result = shell.execute(ParsedInput(tokens=["greet"]))
+    assert result.value == "hi"
+    assert "greet" in shell.known_commands
