@@ -1,4 +1,3 @@
-import os
 import subprocess
 from dataclasses import dataclass, field
 from enum import Enum, auto
@@ -31,12 +30,6 @@ class Result:
     value: Optional[str] = None
     error: Optional[str] = None
     interrupt: Optional[bool] = False
-
-
-class JobOrder(Enum):
-    MOST_RECENT = auto()
-    PREVIOUS_MOST_RECENT = auto()
-    OTHER = auto()
 
 
 @dataclass
