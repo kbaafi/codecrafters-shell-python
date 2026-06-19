@@ -87,7 +87,7 @@ class Shell:
         self._ctx.executables = get_executables()
         self._known_commands = list(self._ctx.built_ins) + list(self._ctx.executables)
 
-    def process_prompt(self, user_input: str):
+    def process_prompt(self, user_input: str) -> Result:
         self._ctx.full_history.append(user_input)
         self._ctx.curr_history.append(user_input)
         pipeline_tokens = user_input.split(sep="|")
@@ -102,9 +102,9 @@ class Shell:
             parsed_input = parsed_inputs[0]
             if parsed_input.command == "":
                 return Result()
-            self.execute(parsed_input)
+            return self.execute(parsed_input)
         else:
-            self.execute_pipeline(parsed_inputs)
+            return self.execute_pipeline(parsed_inputs)
 
     def execute(self, parsed_input: ParsedInput, stdin: str | None = None) -> Result:
         self._refresh_executables()
@@ -134,9 +134,6 @@ class Shell:
                     self._ctx, *parsed_input.args
                 )
             elif parsed_input.command in self._ctx.executables:
-                self._ctx.curr_result = run_executable(
-                    parsed_input.command, *parsed_input.args, stdin=stdin
-                )
                 return run_executable(
                     parsed_input.command, *parsed_input.args, stdin=stdin
                 )
@@ -168,10 +165,9 @@ class Shell:
                 pending_input = result.value or ""
                 if is_last:
                     self._parsed_input = parsed_input
-                    self._ctx.curr_result = result
                     for proc in procs:
                         proc.wait()
-                    return
+                    return result
             else:
                 cmd = [parsed_input.command, *parsed_input.args]
                 if pending_input is not None:
@@ -199,6 +195,9 @@ class Shell:
                         prev_stdout.close()
                 prev_stdout = proc.stdout
                 procs.append(proc)
+
+        if not procs:
+            return Result()
 
         stdout, stderr = procs[-1].communicate()
         for proc in procs[:-1]:
