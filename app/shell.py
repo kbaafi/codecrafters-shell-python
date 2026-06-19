@@ -70,15 +70,30 @@ def _to_file(text: str | None, path: str, append: bool):
         f.write(text or "")
 
 
+def output_results(ctx: ShellContext, result: Result, parsed_input: ParsedInput):
+    if parsed_input.stderr_redirect is not None:
+        _to_file(result.error, parsed_input.stderr_redirect, parsed_input.stderr_append)
+        _to_screen(result.value)
+    elif parsed_input.stdout_redirect is not None:
+        _to_file(result.value, parsed_input.stdout_redirect, parsed_input.stdout_append)
+        _to_screen(result.error)
+    elif result.value:
+        _to_screen(result.value)
+    elif result.error:
+        _to_screen(result.error)
+
+    completed = render_completed_jobs(ctx)
+    if completed.value:
+        _to_screen(completed.value)
+
+
 class Shell:
     def __init__(self) -> None:
         self._ctx = ShellContext(
             cwd=os.getcwd(),
             built_ins=_default_built_ins(),
             executables=get_executables(),
-            curr_result=Result(value=None, error=None),
         )
-        self._parsed_input: ParsedInput = ParsedInput(tokens=[])
         self._known_commands: list[str] = list(self._ctx.built_ins) + list(
             self._ctx.executables
         )
@@ -87,7 +102,7 @@ class Shell:
         self._ctx.executables = get_executables()
         self._known_commands = list(self._ctx.built_ins) + list(self._ctx.executables)
 
-    def process_prompt(self, user_input: str) -> Result:
+    def process_prompt(self, user_input: str) -> tuple[Result, ParsedInput]:
         self._ctx.full_history.append(user_input)
         self._ctx.curr_history.append(user_input)
         pipeline_tokens = user_input.split(sep="|")
@@ -97,19 +112,18 @@ class Shell:
         ]
 
         if len(parsed_inputs) == 0:
-            return Result()
+            return Result(), ParsedInput()
         elif len(parsed_inputs) == 1:
             parsed_input = parsed_inputs[0]
             if parsed_input.command == "":
-                return Result()
-            return self.execute(parsed_input)
+                return Result(), parsed_input
+            return self.execute(parsed_input), parsed_input
         else:
-            return self.execute_pipeline(parsed_inputs)
+            result, last_parsed = self.execute_pipeline(parsed_inputs)
+            return result, last_parsed
 
     def execute(self, parsed_input: ParsedInput, stdin: str | None = None) -> Result:
         self._refresh_executables()
-
-        self._parsed_input = parsed_input
 
         if parsed_input.is_background:
             job = subprocess.Popen(parsed_input.tokens[:-1])
@@ -132,12 +146,12 @@ class Shell:
                 )
             else:
                 return Result(error=f"{parsed_input.command}: command not found\n")
-        return Result()
 
-    def execute_pipeline(self, command_pipeline: list[ParsedInput]) -> Result:
+    def execute_pipeline(
+        self, command_pipeline: list[ParsedInput]
+    ) -> tuple[Result, ParsedInput]:
         if len(command_pipeline) == 1:
-            self.execute(parsed_input=command_pipeline[0])
-            return Result()
+            return self.execute(parsed_input=command_pipeline[0]), command_pipeline[0]
 
         procs: list[subprocess.Popen] = []
         prev_stdout = None  # file object from previous Popen's stdout
@@ -157,10 +171,9 @@ class Shell:
                 )
                 pending_input = result.value or ""
                 if is_last:
-                    self._parsed_input = parsed_input
                     for proc in procs:
                         proc.wait()
-                    return result
+                    return result, parsed_input
             else:
                 cmd = [parsed_input.command, *parsed_input.args]
                 if pending_input is not None:
@@ -190,38 +203,13 @@ class Shell:
                 procs.append(proc)
 
         if not procs:
-            return Result()
+            return Result(), command_pipeline[-1]
 
         stdout, stderr = procs[-1].communicate()
         for proc in procs[:-1]:
             proc.wait()
 
-        self._parsed_input = command_pipeline[-1]
-        return Result(value=stdout, error=stderr)
-
-    def output_results(self, result: Result):
-        if self._parsed_input.stderr_redirect is not None:
-            _to_file(
-                result.error,
-                self._parsed_input.stderr_redirect,
-                self._parsed_input.stderr_append,
-            )
-            _to_screen(result.value)
-        elif self._parsed_input.stdout_redirect is not None:
-            _to_file(
-                result.value,
-                self._parsed_input.stdout_redirect,
-                self._parsed_input.stdout_append,
-            )
-            _to_screen(result.error)
-        elif result.value:
-            _to_screen(result.value)
-        elif result.error:
-            _to_screen(result.error)
-
-        result = render_completed_jobs(self._ctx)
-        if result.value:
-            _to_screen(result.value)
+        return Result(value=stdout, error=stderr), command_pipeline[-1]
 
     @property
     def known_commands(self):

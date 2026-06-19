@@ -3,14 +3,13 @@ from collections import deque
 from dataclasses import dataclass, field
 from typing import Optional
 
-from .models import CommandType, ProcessInfo, Result
+from .models import CommandType, ProcessInfo
 
 
 @dataclass
 class ShellContext:
     built_ins: dict
     executables: dict
-    curr_result: Result
     cwd: str = field(default_factory=os.getcwd)
     completers: dict[str, str] = field(default_factory=dict)
     jobs: dict[int, ProcessInfo] = field(default_factory=dict)

@@ -1,11 +1,9 @@
 import os
 import readline
-import sys
-from pathlib import Path
 
 from .command_handlers import history_handler
-from .common import PROMPT, ParsedInput, tokenize_user_input
-from .shell import Shell
+from .common import PROMPT
+from .shell import Shell, output_results
 from .shell_auto_complete import make_completer
 
 
@@ -28,13 +26,12 @@ def main():
         if len(user_input) == 0 or not user_input:
             continue
 
-        result = shell.process_prompt(user_input=user_input)
+        result, parsed_input = shell.process_prompt(user_input=user_input)
 
-        # Handle results
         if result and result.interrupt:
             break
         elif result:
-            shell.output_results(result)
+            output_results(shell._ctx, result, parsed_input)
 
     if history_file:
         history_handler(shell._ctx, "-w", history_file)
