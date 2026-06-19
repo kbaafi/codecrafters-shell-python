@@ -2,7 +2,6 @@ import re
 from enum import Enum, auto
 
 from .models import ParsedInput
-from .shell_context import ShellContext
 
 PROMPT = "$ "
 
