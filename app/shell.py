@@ -142,6 +142,7 @@ class Shell:
                 )
             else:
                 return Result(error=f"{parsed_input.command}: command not found\n")
+        return Result()
 
     def execute_pipeline(self, command_pipeline: list[ParsedInput]):
         if len(command_pipeline) == 1:
@@ -204,7 +205,7 @@ class Shell:
             proc.wait()
 
         self._parsed_input = command_pipeline[-1]
-        self._ctx.curr_result = Result(value=stdout, error=stderr)
+        return Result(value=stdout, error=stderr)
 
     def output_results(self, result: Result):
         if self._parsed_input.stderr_redirect is not None:
