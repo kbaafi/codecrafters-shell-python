@@ -16,10 +16,12 @@ class CURSOR_STATE(Enum):
 
 def expand_variables(s: str, variables: dict) -> str:
     def replacer(match):
-        name = match.group(1)
+        name = match.group(1) or match.group(2)
         return variables.get(name, match.group(0))
 
-    return re.sub(r"\$([_a-zA-Z][_a-zA-Z0-9]*)", replacer, s)
+    return re.sub(
+        r"\$\{([_a-zA-Z][_a-zA-Z0-9]*)\}|\$([_a-zA-Z][_a-zA-Z0-9]*)", replacer, s
+    )
 
 
 def tokenize_user_input(input_str: str, context_variables: dict) -> ParsedInput:
