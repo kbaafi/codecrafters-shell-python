@@ -87,7 +87,7 @@ class Shell:
         self._ctx.executables = get_executables()
         self._known_commands = list(self._ctx.built_ins) + list(self._ctx.executables)
 
-    def handle_prompt(self, user_input: str):
+    def process_prompt(self, user_input: str):
         self._ctx.full_history.append(user_input)
         self._ctx.curr_history.append(user_input)
         pipeline_tokens = user_input.split(sep="|")
@@ -106,7 +106,7 @@ class Shell:
         else:
             self.execute_pipeline(parsed_inputs)
 
-    def execute(self, parsed_input: ParsedInput, stdin: str | None = None):
+    def execute(self, parsed_input: ParsedInput, stdin: str | None = None) -> Result:
         self._refresh_executables()
 
         self._parsed_input = parsed_input
@@ -121,22 +121,27 @@ class Shell:
                 program=job, parsed_input=parsed_input
             )
 
-            self._ctx.curr_result = Result(
-                value=f"[{current_max_job_id + 1}] {job.pid}"
-            )
+            # self._ctx.curr_result = Result(
+            #     value=f"[{current_max_job_id + 1}] {job.pid}"
+            # )
+            return Result(value=f"[{current_max_job_id + 1}] {job.pid}")
         else:
             if parsed_input.command in self._ctx.built_ins:
-                self._ctx.curr_result = self._ctx.built_ins[parsed_input.command](
+                # self._ctx.curr_result = self._ctx.built_ins[parsed_input.command](
+                #     self._ctx, *parsed_input.args
+                # )
+                return self._ctx.built_ins[parsed_input.command](
                     self._ctx, *parsed_input.args
                 )
             elif parsed_input.command in self._ctx.executables:
                 self._ctx.curr_result = run_executable(
                     parsed_input.command, *parsed_input.args, stdin=stdin
                 )
-            else:
-                self._ctx.curr_result = Result(
-                    error=f"{parsed_input.command}: command not found\n"
+                return run_executable(
+                    parsed_input.command, *parsed_input.args, stdin=stdin
                 )
+            else:
+                return Result(error=f"{parsed_input.command}: command not found\n")
 
     def execute_pipeline(self, command_pipeline: list[ParsedInput]):
         if len(command_pipeline) == 1:
@@ -201,8 +206,7 @@ class Shell:
         self._parsed_input = command_pipeline[-1]
         self._ctx.curr_result = Result(value=stdout, error=stderr)
 
-    def output_results(self):
-        result = self._ctx.curr_result
+    def output_results(self, result: Result):
         if self._parsed_input.stderr_redirect is not None:
             _to_file(
                 result.error,

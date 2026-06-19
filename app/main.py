@@ -28,13 +28,13 @@ def main():
         if len(user_input) == 0 or not user_input:
             continue
 
-        shell.handle_prompt(user_input=user_input)
+        result = shell.process_prompt(user_input=user_input)
 
         # Handle results
-        if shell._ctx.curr_result.interrupt:
+        if result and result.interrupt:
             break
-        else:
-            shell.output_results()
+        elif result:
+            shell.output_results(result)
 
     if history_file:
         history_handler(shell._ctx, "-w", history_file)
