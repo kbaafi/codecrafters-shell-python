@@ -1,6 +1,8 @@
+import re
 from enum import Enum, auto
 
 from .models import ParsedInput
+from .shell_context import ShellContext
 
 PROMPT = "$ "
 
@@ -12,7 +14,15 @@ class CURSOR_STATE(Enum):
     IN_QUOTE_ESCAPE = auto()
 
 
-def tokenize_user_input(input_str: str) -> ParsedInput:
+def expand_variables(s: str, variables: dict) -> str:
+    def replacer(match):
+        name = match.group(1)
+        return variables.get(name, match.group(0))
+
+    return re.sub(r"\$([_a-zA-Z][_a-zA-Z0-9]*)", replacer, s)
+
+
+def tokenize_user_input(input_str: str, context_variables: dict) -> ParsedInput:
     tokens = []
     current = []
     stdout_redirect = None
@@ -30,6 +40,7 @@ def tokenize_user_input(input_str: str) -> ParsedInput:
             i += 1
         return s[start:i], i - 1
 
+    input_str = expand_variables(s=input_str, variables=context_variables)
     i = 0
     while i < len(input_str):
         ch = input_str[i]

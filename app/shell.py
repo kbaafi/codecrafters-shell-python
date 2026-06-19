@@ -91,8 +91,9 @@ class Shell:
         self._ctx.full_history.append(user_input)
         self._ctx.curr_history.append(user_input)
         pipeline_tokens = user_input.split(sep="|")
+
         parsed_inputs: list[ParsedInput] = [
-            tokenize_user_input(i) for i in pipeline_tokens
+            tokenize_user_input(i, self._ctx.variables) for i in pipeline_tokens
         ]
 
         if len(parsed_inputs) == 0:

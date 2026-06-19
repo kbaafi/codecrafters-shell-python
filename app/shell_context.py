@@ -1,6 +1,7 @@
 import os
 from collections import deque
 from dataclasses import dataclass, field
+from typing import Optional
 
 from .models import CommandType, ProcessInfo, Result
 
@@ -23,3 +24,9 @@ class ShellContext:
         elif command in self.executables:
             return CommandType.EXECUTABLE, self.executables[command]
         return CommandType.INVALID, None
+
+    def variable_exists(self, var_name: str):
+        return True if var_name in self.variables else False
+
+    def get_variable_value(self, var_name: str) -> Optional[str]:
+        return None if self.variable_exists(var_name) else self.variables[var_name]
