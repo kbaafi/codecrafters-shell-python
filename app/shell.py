@@ -120,16 +120,9 @@ class Shell:
             self._ctx.jobs[current_max_job_id + 1] = ProcessInfo(
                 program=job, parsed_input=parsed_input
             )
-
-            # self._ctx.curr_result = Result(
-            #     value=f"[{current_max_job_id + 1}] {job.pid}"
-            # )
             return Result(value=f"[{current_max_job_id + 1}] {job.pid}")
         else:
             if parsed_input.command in self._ctx.built_ins:
-                # self._ctx.curr_result = self._ctx.built_ins[parsed_input.command](
-                #     self._ctx, *parsed_input.args
-                # )
                 return self._ctx.built_ins[parsed_input.command](
                     self._ctx, *parsed_input.args
                 )
@@ -141,10 +134,10 @@ class Shell:
                 return Result(error=f"{parsed_input.command}: command not found\n")
         return Result()
 
-    def execute_pipeline(self, command_pipeline: list[ParsedInput]):
+    def execute_pipeline(self, command_pipeline: list[ParsedInput]) -> Result:
         if len(command_pipeline) == 1:
             self.execute(parsed_input=command_pipeline[0])
-            return
+            return Result()
 
         procs: list[subprocess.Popen] = []
         prev_stdout = None  # file object from previous Popen's stdout
