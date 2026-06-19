@@ -1,9 +1,8 @@
 import os
 import readline
 
-from .command_handlers import history_handler
 from .common import PROMPT
-from .shell import Shell, output_results
+from .shell import Shell
 from .shell_auto_complete import make_completer
 
 
@@ -19,22 +18,20 @@ def main():
     history_file = os.environ.get("HISTFILE", None)
 
     if history_file:
-        history_handler(shell._ctx, "-r", history_file)
+        shell.load_history(history_file)
 
     while True:
         user_input = input(f"{PROMPT}")
         if len(user_input) == 0 or not user_input:
             continue
 
-        result, parsed_input = shell.process_prompt(user_input=user_input)
+        result = shell.handle_prompt(user_input=user_input)
 
         if result and result.interrupt:
             break
-        elif result:
-            output_results(shell._ctx, result, parsed_input)
 
     if history_file:
-        history_handler(shell._ctx, "-w", history_file)
+        shell.save_history(history_file)
 
 
 if __name__ == "__main__":

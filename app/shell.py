@@ -88,19 +88,33 @@ def output_results(ctx: ShellContext, result: Result, parsed_input: ParsedInput)
 
 
 class Shell:
-    def __init__(self) -> None:
-        self._ctx = ShellContext(
+    def __init__(self, ctx: ShellContext | None = None) -> None:
+        self._ctx = ctx or ShellContext(
             cwd=os.getcwd(),
-            built_ins=_default_built_ins(),
+            built_ins={},
             executables=get_executables(),
         )
         self._known_commands: list[str] = list(self._ctx.built_ins) + list(
             self._ctx.executables
         )
+        if not self._ctx.built_ins:
+            for name, handler in _default_built_ins().items():
+                self.register_builtin(name, handler)
+
+    def register_builtin(self, name: str, handler) -> None:
+        self._ctx.built_ins[name] = handler
+        if name not in self._known_commands:
+            self._known_commands.append(name)
 
     def _refresh_executables(self):
         self._ctx.executables = get_executables()
         self._known_commands = list(self._ctx.built_ins) + list(self._ctx.executables)
+
+    def handle_prompt(self, user_input: str) -> Result:
+        result, parsed_input = self.process_prompt(user_input)
+        if not result.interrupt:
+            output_results(self._ctx, result, parsed_input)
+        return result
 
     def process_prompt(self, user_input: str) -> tuple[Result, ParsedInput]:
         self._ctx.full_history.append(user_input)
@@ -210,6 +224,12 @@ class Shell:
             proc.wait()
 
         return Result(value=stdout, error=stderr), command_pipeline[-1]
+
+    def load_history(self, path: str):
+        history_handler(self._ctx, "-r", path)
+
+    def save_history(self, path: str):
+        history_handler(self._ctx, "-w", path)
 
     @property
     def known_commands(self):
