@@ -13,8 +13,8 @@ class ShellContext:
     cwd: str = field(default_factory=os.getcwd)
     completers: dict[str, str] = field(default_factory=dict)
     jobs: dict[int, ProcessInfo] = field(default_factory=dict)
-    full_history: deque = field(default_factory=deque)
-    curr_history: deque = field(default_factory=deque)
+    full_history: deque[str] = field(default_factory=deque)
+    curr_history: deque[str] = field(default_factory=deque)
     variables: dict[str, str] = field(default_factory=dict)
 
     def resolve_command(self, command: str) -> tuple[CommandType, str | None]:
@@ -25,7 +25,7 @@ class ShellContext:
         return CommandType.INVALID, None
 
     def variable_exists(self, var_name: str):
-        return True if var_name in self.variables else False
+        return var_name in self.variables
 
     def get_variable_value(self, var_name: str) -> Optional[str]:
         return None if self.variable_exists(var_name) else self.variables[var_name]
